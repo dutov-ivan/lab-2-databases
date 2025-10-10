@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS military;
+CREATE DATABASE military;
