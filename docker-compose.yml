@@ -18,6 +18,8 @@ services:
       - "8080:80"
     depends_on:
       - postgres
+    volumes:
+      - ./generator/import:/import
 
 volumes:
   postgres_data:

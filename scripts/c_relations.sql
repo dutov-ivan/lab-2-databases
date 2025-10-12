@@ -71,6 +71,11 @@ REFERENCES organizational_levels(id);
 
 -- Стосується амуніції
 
+ALTER TABLE munition_types
+ADD CONSTRAINT fk_munition_types_munition_category
+FOREIGN KEY (category_id)
+REFERENCES munition_categories(id);
+
 ALTER TABLE munition_supplies
 ADD CONSTRAINT fk_munition_supplies_unit
 FOREIGN KEY (unit_id)

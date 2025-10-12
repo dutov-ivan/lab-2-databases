@@ -152,7 +152,8 @@ ADD CONSTRAINT chk_latitude_range CHECK (latitude BETWEEN -90 AND 90);
 
 CREATE TABLE  munition_types (
     id BIGINT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
+    name VARCHAR(100) NOT NULL UNIQUE,
+    category_id BIGINT NOT NULL
 );
 
 ALTER TABLE munition_types
