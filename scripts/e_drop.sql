@@ -25,16 +25,16 @@ ALTER TABLE rank_categories
 	DROP CONSTRAINT chk_max_organizational_level;
 
 -- 7. Видалення FOREIGN KEY між постачанням амуніції та підрозділом
-ALTER TABLE ammunition_supplies
-	DROP CONSTRAINT fk_ammunition_supplies_unit;
+ALTER TABLE munition_supplies
+	DROP CONSTRAINT fk_munition_supplies_unit;
 
 -- 8. Видалення FOREIGN KEY (зв'язок значень атрибутів звання та військовослужбовця)
 ALTER TABLE rank_attribute_values
 	DROP CONSTRAINT fk_rank_attribute_values_serviceman;
 
 -- 9. Видалення FOREIGN KEY (зв'язок значень атрибутів категорій амуніції з типом амуніції)
-ALTER TABLE ammunition_category_attribute_values
-	DROP CONSTRAINT fk_ammunition_category_attribute_values_ammunition_type;
+ALTER TABLE munition_category_attribute_values
+	DROP CONSTRAINT fk_munition_category_attribute_values_munition_type;
 
 -- 10. Видалення одного з географічних CHECK-обмежень (довгота)
 ALTER TABLE locations

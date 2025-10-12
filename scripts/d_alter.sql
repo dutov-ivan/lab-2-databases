@@ -26,12 +26,12 @@ ALTER TABLE units
 ALTER TABLE organizational_levels
 	ALTER COLUMN level TYPE SMALLINT;
 
--- 7) ammunition_supplies: встановити DEFAULT 0 для quantity
-ALTER TABLE ammunition_supplies
+-- 7) munition_supplies: встановити DEFAULT 0 для quantity
+ALTER TABLE munition_supplies
 	ALTER COLUMN quantity SET DEFAULT 0;
 
--- 8) ammunition_supplies: верхня межа для quantity
-ALTER TABLE ammunition_supplies
+-- 8) munition_supplies: верхня межа для quantity
+ALTER TABLE munition_supplies
 	ADD CONSTRAINT chk_quantity_upper_bound CHECK (quantity <= 1000000);
 
 -- 9) locations: унікальність пари координат (longitude, latitude)

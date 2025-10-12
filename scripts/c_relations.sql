@@ -71,31 +71,31 @@ REFERENCES organizational_levels(id);
 
 -- Стосується амуніції
 
-ALTER TABLE ammunition_supplies
-ADD CONSTRAINT fk_ammunition_supplies_unit
+ALTER TABLE munition_supplies
+ADD CONSTRAINT fk_munition_supplies_unit
 FOREIGN KEY (unit_id)
 REFERENCES units(id);
 
-ALTER TABLE ammunition_supplies
-ADD CONSTRAINT fk_ammunition_supplies_ammunition_type
-FOREIGN KEY (ammunition_type_id)
-REFERENCES ammunition_types(id);
+ALTER TABLE munition_supplies
+ADD CONSTRAINT fk_munition_supplies_munition_type
+FOREIGN KEY (munition_type_id)
+REFERENCES munition_types(id);
 
-ALTER TABLE ammunition_category_attributes
-ADD CONSTRAINT fk_ammunition_category_attributes_category
+ALTER TABLE munition_category_attributes
+ADD CONSTRAINT fk_munition_category_attributes_category
 FOREIGN KEY (category_id)
-REFERENCES ammunition_categories(id);
+REFERENCES munition_categories(id);
 
-ALTER TABLE ammunition_category_attribute_values
-ADD CONSTRAINT fk_ammunition_category_attribute_values_attribute
+ALTER TABLE munition_category_attribute_values
+ADD CONSTRAINT fk_munition_category_attribute_values_attribute
 FOREIGN KEY (attribute_id)
-REFERENCES ammunition_category_attributes(id);
+REFERENCES munition_category_attributes(id);
 
-ALTER TABLE ammunition_category_attribute_values
-ADD CONSTRAINT fk_ammunition_category_attribute_values_ammunition_type
-FOREIGN KEY (ammunition_type_id)
-REFERENCES ammunition_types(id);
+ALTER TABLE munition_category_attribute_values
+ADD CONSTRAINT fk_munition_category_attribute_values_munition_type
+FOREIGN KEY (munition_type_id)
+REFERENCES munition_types(id);
 
-ALTER TABLE ammunition_category_attribute_values
-ADD CONSTRAINT uq_ammunition_category_attribute_values
-UNIQUE(attribute_id, ammunition_type_id);
+ALTER TABLE munition_category_attribute_values
+ADD CONSTRAINT uq_munition_category_attribute_values
+UNIQUE(attribute_id, munition_type_id);

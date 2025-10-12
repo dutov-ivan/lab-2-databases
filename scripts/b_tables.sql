@@ -150,35 +150,35 @@ ADD CONSTRAINT chk_longitude_range CHECK (longitude BETWEEN -180 AND 180),
 ADD CONSTRAINT chk_latitude_range CHECK (latitude BETWEEN -90 AND 90);
 
 
-CREATE TABLE  ammunition_types (
+CREATE TABLE  munition_types (
     id BIGINT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE
 );
 
-ALTER TABLE ammunition_types
-ADD CONSTRAINT chk_name CHECK (ammunition_types.name <> '');
+ALTER TABLE munition_types
+ADD CONSTRAINT chk_name CHECK (munition_types.name <> '');
 
 
-CREATE TABLE  ammunition_supplies (
+CREATE TABLE  munition_supplies (
     id BIGINT PRIMARY KEY,
     quantity INT NOT NULL,
     unit_id BIGINT NOT NULL,
-    ammunition_type_id BIGINT NOT NULL
+    munition_type_id BIGINT NOT NULL
 );
 
-ALTER TABLE ammunition_supplies
-ADD CONSTRAINT chk_quantity CHECK (ammunition_supplies.quantity >= 0);
+ALTER TABLE munition_supplies
+ADD CONSTRAINT chk_quantity CHECK (munition_supplies.quantity >= 0);
 
-CREATE TABLE  ammunition_categories (
+CREATE TABLE  munition_categories (
     id BIGINT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
     is_transport BOOLEAN NOT NULL
 );
 
-ALTER TABLE ammunition_categories
-ADD CONSTRAINT chk_name CHECK (ammunition_categories.name <> '');
+ALTER TABLE munition_categories
+ADD CONSTRAINT chk_name CHECK (munition_categories.name <> '');
 
-CREATE TABLE  ammunition_category_attributes(
+CREATE TABLE  munition_category_attributes(
     id BIGINT PRIMARY KEY,
     attribute_name VARCHAR(100) NOT NULL,
     attribute_type attribute_type NOT NULL,
@@ -186,13 +186,13 @@ CREATE TABLE  ammunition_category_attributes(
     category_id BIGINT NOT NULL
 );
 
-ALTER TABLE ammunition_category_attributes
-ADD CONSTRAINT chk_attribute_name CHECK (ammunition_category_attributes.attribute_name <> '');
+ALTER TABLE munition_category_attributes
+ADD CONSTRAINT chk_attribute_name CHECK (munition_category_attributes.attribute_name <> '');
 
-CREATE TABLE  ammunition_category_attribute_values(
+CREATE TABLE  munition_category_attribute_values(
     id BIGINT PRIMARY KEY,
     value VARCHAR(100) NOT NULL,
     attribute_id BIGINT NOT NULL,
-    ammunition_type_id BIGINT NOT NULL
+    munition_type_id BIGINT NOT NULL
 );
 
