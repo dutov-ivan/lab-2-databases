@@ -1,13 +1,11 @@
-import {
-  type MunitionCategory,
-  type AttributeType,
-  type AllowedUnits,
-} from "./data/munition";
+import { type MunitionCategory, type AttributeType } from "./data/munition";
+import type { PhysicalUnitTable } from "./units";
 
 type MunitionCategoryTable = {
   id: number;
   name: string;
   is_transport: boolean;
+  description?: string;
 };
 
 type MunitionAttributeTable = {
@@ -16,11 +14,11 @@ type MunitionAttributeTable = {
   attributeName: string;
   attributeType: AttributeType;
   is_mandatory: boolean;
-  unit?: AllowedUnits;
   is_enum?: boolean;
   enum_values?: string;
   description?: string;
   munition_category_id: number;
+  physical_unit_id?: number;
 };
 
 type MunitionTypeTable = {
@@ -36,7 +34,8 @@ type MunitionTables = {
 };
 
 export const initializeMunition = (
-  categories: MunitionCategory[]
+  categories: MunitionCategory[],
+  physicalUnits: PhysicalUnitTable[]
 ): MunitionTables => {
   const munitionCategories: MunitionCategoryTable[] = [];
   const munitionAttributes: MunitionAttributeTable[] = [];
@@ -61,6 +60,9 @@ export const initializeMunition = (
       typeId++;
     }
     for (const attr of category.attributes) {
+      const physicalUnitId = physicalUnits.find(
+        (unit) => unit.abbreviation === attr.unit
+      )?.id;
       munitionAttributes.push({
         id: attributeId,
         attributeName: attr.name,
@@ -70,7 +72,7 @@ export const initializeMunition = (
         description: attr.description,
         is_enum: attr.is_enum,
         enum_values: JSON.stringify(attr.enum_values),
-        unit: attr.unit,
+        physical_unit_id: physicalUnitId,
       });
       attributeId++;
     }

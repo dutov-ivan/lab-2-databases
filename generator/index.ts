@@ -1,12 +1,37 @@
 import { categories } from "./src/data/munition";
+import { units } from "./src/data/units";
 import { saveAsCsv } from "./src/file";
 import { initializeMunition } from "./src/munition";
 import { initializeServicemen } from "./src/servicemen";
+import { initializeUnits } from "./src/units";
 
 const servicemen = initializeServicemen(1000);
-saveAsCsv(servicemen, undefined, "servicemen.csv");
+saveAsCsv(servicemen, {
+  quotedColumns: ["firstName", "lastName", "middleName"],
+  producesFile: true,
+  filename: "servicemen.csv",
+});
 
-const munitionTables = initializeMunition(categories);
-saveAsCsv(munitionTables.categories, undefined, "munition_categories.csv");
-saveAsCsv(munitionTables.attributes, undefined, "munition_attributes.csv");
-saveAsCsv(munitionTables.types, undefined, "munition_types.csv");
+const physicalUnits = initializeUnits(units);
+saveAsCsv(physicalUnits, {
+  producesFile: true,
+  filename: "physical_units.csv",
+  quotedColumns: ["name", "abbreviation"],
+});
+
+const munitionTables = initializeMunition(categories, physicalUnits);
+saveAsCsv(munitionTables.categories, {
+  producesFile: true,
+  filename: "munition_categories.csv",
+  quotedColumns: ["name", "description"],
+});
+saveAsCsv(munitionTables.attributes, {
+  producesFile: true,
+  filename: "munition_category_attributes.csv",
+  quotedColumns: ["attributeName", "description", "enum_values"],
+});
+saveAsCsv(munitionTables.types, {
+  producesFile: true,
+  filename: "munition_types.csv",
+  quotedColumns: ["name"],
+});

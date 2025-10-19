@@ -90,7 +90,7 @@ ADD CONSTRAINT chk_max_organizational_level CHECK (rank_categories.max_organizat
 ALTER TABLE rank_categories
 ADD CONSTRAINT chk_name CHECK (rank_categories.name <> '');
 
-CREATE TYPE  attribute_type AS ENUM ('STRING', 'INTEGER', 'BOOLEAN', 'DATE');
+CREATE TYPE  attribute_type AS ENUM ('INT', 'STRING', 'BOOL', 'DATE', 'FLOAT');
 
 CREATE TABLE  rank_attributes(
     id BIGINT PRIMARY KEY,
@@ -149,11 +149,68 @@ ALTER TABLE locations
 ADD CONSTRAINT chk_longitude_range CHECK (longitude BETWEEN -180 AND 180),
 ADD CONSTRAINT chk_latitude_range CHECK (latitude BETWEEN -90 AND 90);
 
+CREATE TABLE physical_units (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    abbreviation VARCHAR(10) NOT NULL UNIQUE
+);
+
+CREATE TABLE  munition_categories (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    is_transport BOOLEAN NOT NULL,
+    description TEXT DEFAULT NULL
+);
+
+ALTER TABLE munition_categories
+ADD CONSTRAINT chk_name CHECK (munition_categories.name <> '');
+
+CREATE TABLE  munition_category_attributes(
+    id BIGINT PRIMARY KEY,
+    attribute_name VARCHAR(100) NOT NULL,
+    attribute_type attribute_type NOT NULL,
+    is_mandatory BOOLEAN NOT NULL,
+    category_id BIGINT NOT NULL,
+    description VARCHAR(255) NULL,
+    is_enum BOOLEAN NOT NULL DEFAULT false,
+    enum_values JSONB NULL,
+    physical_unit_id BIGINT NULL
+);
+
+ALTER TABLE munition_category_attributes
+ADD CONSTRAINT chk_attribute_name CHECK (munition_category_attributes.attribute_name <> '');
+
+ALTER TABLE munition_category_attributes
+ADD CONSTRAINT chk_enum_values_spec
+CHECK (NOT is_enum OR enum_values IS NOT NULL);
+
+CREATE TABLE  munition_category_attribute_values(
+    id BIGINT PRIMARY KEY,
+    attribute_id BIGINT NOT NULL,
+    munition_type_id BIGINT NOT NULL,
+    value_text TEXT,
+    value_numeric NUMERIC(18, 5),
+    value_boolean BOOLEAN,
+    value_date DATE,
+    value_jsonb JSONB
+);
+
+ALTER TABLE munition_category_attribute_values
+ADD CONSTRAINT chk_one_value_type
+CHECK (
+    (CASE WHEN value_text IS NOT NULL THEN 1 ELSE 0 END) +
+    (CASE WHEN value_numeric IS NOT NULL THEN 1 ELSE 0 END) +
+    (CASE WHEN value_boolean IS NOT NULL THEN 1 ELSE 0 END) +
+    (CASE WHEN value_date IS NOT NULL THEN 1 ELSE 0 END) +
+    (CASE WHEN value_jsonb IS NOT NULL THEN 1 ELSE 0 END)
+    = 1
+);
 
 CREATE TABLE  munition_types (
     id BIGINT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
-    category_id BIGINT NOT NULL
+    category_id BIGINT NOT NULL,
+    description TEXT DEFAULT NULL
 );
 
 ALTER TABLE munition_types
@@ -170,30 +227,4 @@ CREATE TABLE  munition_supplies (
 ALTER TABLE munition_supplies
 ADD CONSTRAINT chk_quantity CHECK (munition_supplies.quantity >= 0);
 
-CREATE TABLE  munition_categories (
-    id BIGINT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    is_transport BOOLEAN NOT NULL
-);
-
-ALTER TABLE munition_categories
-ADD CONSTRAINT chk_name CHECK (munition_categories.name <> '');
-
-CREATE TABLE  munition_category_attributes(
-    id BIGINT PRIMARY KEY,
-    attribute_name VARCHAR(100) NOT NULL,
-    attribute_type attribute_type NOT NULL,
-    is_mandatory BOOLEAN NOT NULL,
-    category_id BIGINT NOT NULL
-);
-
-ALTER TABLE munition_category_attributes
-ADD CONSTRAINT chk_attribute_name CHECK (munition_category_attributes.attribute_name <> '');
-
-CREATE TABLE  munition_category_attribute_values(
-    id BIGINT PRIMARY KEY,
-    value VARCHAR(100) NOT NULL,
-    attribute_id BIGINT NOT NULL,
-    munition_type_id BIGINT NOT NULL
-);
 

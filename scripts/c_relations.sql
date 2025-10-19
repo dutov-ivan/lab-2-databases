@@ -91,6 +91,11 @@ ADD CONSTRAINT fk_munition_category_attributes_category
 FOREIGN KEY (category_id)
 REFERENCES munition_categories(id);
 
+ALTER TABLE munition_category_attributes
+ADD CONSTRAINT fk_munition_category_attributes_physical_unit
+FOREIGN KEY (physical_unit_id)
+REFERENCES physical_units(id);
+
 ALTER TABLE munition_category_attribute_values
 ADD CONSTRAINT fk_munition_category_attribute_values_attribute
 FOREIGN KEY (attribute_id)
