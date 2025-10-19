@@ -8,6 +8,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./generator/import:/import
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -18,8 +19,7 @@ services:
       - "8080:80"
     depends_on:
       - postgres
-    volumes:
-      - ./generator/import:/import
+    
 
 volumes:
   postgres_data:
