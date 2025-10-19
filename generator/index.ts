@@ -35,3 +35,8 @@ saveAsCsv(munitionTables.types, {
   filename: "munition_types.csv",
   quotedColumns: ["name"],
 });
+saveAsCsv(munitionTables.values, {
+  producesFile: true,
+  filename: "munition_attribute_values.csv",
+  quotedColumns: ["value_text", "value_jsonb"],
+});

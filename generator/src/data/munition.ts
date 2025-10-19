@@ -7,7 +7,13 @@ export type MunitionCategory = {
   attributes: MunitionAttribute[]; // Атрибути, специфічні для цієї категорії (наприклад, "калібр" чи "макс. дальність польоту")
 };
 
-export type AttributeType = "INT" | "STRING" | "BOOL" | "DATE" | "FLOAT";
+export type AttributeType =
+  | "INT"
+  | "STRING"
+  | "BOOL"
+  | "DATE"
+  | "FLOAT"
+  | "JSONB";
 
 type MunitionAttribute = {
   name: string; // Назва атрибута (наприклад, "калібр", "макс. дальність польоту")

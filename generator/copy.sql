@@ -13,3 +13,7 @@ WITH (FORMAT csv, HEADER true);
 COPY munition_types (id, name, category_id) 
 FROM '/import/munition_types.csv'
 WITH (FORMAT csv, HEADER true);
+
+COPY munition_category_attribute_values (id, attribute_id, munition_type_id, value_text, value_numeric, value_boolean, value_date, value_jsonb) 
+FROM '/import/munition_attribute_values.csv'
+WITH (FORMAT csv, HEADER true);
