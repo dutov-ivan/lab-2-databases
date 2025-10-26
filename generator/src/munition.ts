@@ -30,7 +30,6 @@ type MunitionTypeTable = {
 };
 
 type MunitionAttributeValueTable = {
-  id: number;
   attribute_id: number;
   munition_type_id: number;
   value_text: string | null;
@@ -59,8 +58,6 @@ export const initializeMunition = (
   let categoryId = 1;
   let typeId = 1;
   let attributeId = 1;
-
-  let attributeValueId = 1;
 
   for (const category of categories) {
     munitionCategories.push({
@@ -104,7 +101,6 @@ export const initializeMunition = (
       .forEach((attr) => {
         // TODO: Not include non-mandatory attributes sometimes
         let result: MunitionAttributeValueTable = {
-          id: attributeValueId,
           attribute_id: attr.id,
           munition_type_id: munitionType.id,
           value_text: null,
@@ -138,7 +134,6 @@ export const initializeMunition = (
             info: faker.lorem.sentence(),
           });
         }
-        attributeValueId++;
         munitionTypeValues.push(result);
       });
   }
