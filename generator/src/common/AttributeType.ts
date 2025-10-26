@@ -1,7 +1,1 @@
-export type AttributeType =
-  | "INT"
-  | "STRING"
-  | "BOOL"
-  | "DATE"
-  | "FLOAT"
-  | "JSONB";
+export type AttributeType = "INT" | "STRING" | "BOOL" | "DATE" | "FLOAT";

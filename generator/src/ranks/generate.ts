@@ -3,7 +3,7 @@ import type {
   GeneratedRank,
   GeneratedRankAttribute,
   GeneratedRankCategory,
-} from "../data/rank";
+} from "./data";
 import type { MeasurementUnitRow } from "../units/generate";
 import { findOrThrow } from "../utils/findOrThrow";
 
@@ -16,13 +16,14 @@ type RankCategoryRow = {
 };
 
 type RankAttributeRow = {
+  id: number;
   name: string; // Назва атрибута (наприклад, "дата закінчення академії", "дата присвоєння генеральського звання" тощо)
   type: AttributeType; // Тип даних атрибута;
   is_enum: boolean; // Чи є цей атрибут таким, що має обмежений набір значень (ENUM)
   is_required: boolean; // Чи є цей атрибут обов'язковим для заповнення
-  measurement_unit_id?: number;
-  description?: string;
-  enum_values?: string;
+  measurement_unit_id: number | null;
+  description: string | null;
+  enum_values: string | null;
 };
 
 type RankAttributeToRankRow = {
@@ -46,14 +47,13 @@ type RankAttributeValueRow = {
   value_numeric: number | null;
   value_boolean: boolean | null;
   value_date: string | null;
-  value_jsonb: string | null;
 };
 
 type RankTables = {
-  categories: RankCategoryRow[];
-  attributes: RankAttributeRow[];
+  rankCategories: RankCategoryRow[];
   ranks: RankRow[];
-  rankAttributes: RankAttributeToRankRow[];
+  rankAttributes: RankAttributeRow[];
+  rankAttributeRanks: RankAttributeToRankRow[];
 };
 
 export const generateRankTables = (
@@ -97,14 +97,15 @@ export const generateRankTables = (
 
   for (const attr of attributes) {
     rankAttributes.push({
+      id: attributeId,
       name: attr.name,
       type: attr.type,
       is_enum: attr.is_enum,
       is_required: attr.is_required,
-      measurement_unit_id: units.find((unit) => unit.abbreviation === attr.unit)
-        ?.id,
-      description: attr.description,
-      enum_values: JSON.stringify(attr.enum_values),
+      measurement_unit_id:
+        units.find((unit) => unit.abbreviation === attr.unit)?.id || null,
+      description: attr.description || null,
+      enum_values: JSON.stringify(attr.enum_values) || null,
     });
 
     const assignedRanks = attr.assignedToRanks?.map((rankName) =>
@@ -122,9 +123,9 @@ export const generateRankTables = (
   }
 
   return {
-    categories: rankCategories,
-    attributes: rankAttributes,
+    rankCategories: rankCategories,
+    rankAttributes: rankAttributes,
     ranks: rankTables,
-    rankAttributes: rankAttributeToRank,
+    rankAttributeRanks: rankAttributeToRank,
   };
 };

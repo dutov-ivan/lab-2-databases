@@ -27,7 +27,7 @@ export type GeneratedRankAttribute = {
 };
 
 // Масив звань ЗСУ (Сухопутні війська / ВМС)
-export const ranks = [
+export const RANKS = [
   // Рядовий склад
   {
     name: "Солдат / Матрос",
@@ -145,7 +145,7 @@ export const ranks = [
 ];
 
 // Категорії (склади) військових звань
-export const rankCategories = [
+export const RANK_CATEGORIES = [
   {
     name: "Рядовий склад",
     description:
@@ -183,7 +183,7 @@ export const rankCategories = [
 ];
 
 // Атрибути, що стосуються звання, його отримання та кваліфікацій
-export const rankAttributes: GeneratedRankAttribute[] = [
+export const RANK_ATTRIBUTES: GeneratedRankAttribute[] = [
   // --- 1. Метадані та системні атрибути ---
   {
     name: "Код звання за НАТО (STANAG 2116)",

@@ -81,16 +81,25 @@ CREATE TABLE
     ranks (
         id BIGINT PRIMARY KEY,
         name VARCHAR(50) NOT NULL UNIQUE,
+        description VARCHAR(255) DEFAULT NULL,
         category_id BIGINT,
         rank_value INT NOT NULL
     );
 
 ALTER TABLE ranks ADD CONSTRAINT chk_ranks_name CHECK (ranks.name <> '');
 
+ALTER TABLE ranks ADD CONSTRAINT chk_rank_value CHECK (ranks.rank_value >= 0);
+
+ALTER TABLE ranks ADD CONSTRAINT chk_description_nonempty CHECK (
+    description IS NULL
+    OR LENGTH (TRIM(description)) > 0
+);
+
 CREATE TABLE
     rank_categories (
         id BIGINT PRIMARY KEY,
         name VARCHAR(50) NOT NULL UNIQUE,
+        description VARCHAR(255) DEFAULT NULL,
         min_rank INT NOT NULL,
         max_rank INT NOT NULL
     );
@@ -103,6 +112,11 @@ ALTER TABLE rank_categories ADD CONSTRAINT chk_min_rank_leq_max CHECK (
     rank_categories.min_rank <= rank_categories.max_rank
 );
 
+ALTER TABLE rank_categories ADD CONSTRAINT chk_description_nonempty CHECK (
+    description IS NULL
+    OR LENGTH (TRIM(description)) > 0
+);
+
 ALTER TABLE rank_categories ADD CONSTRAINT chk_name CHECK (rank_categories.name <> '');
 
 CREATE TYPE attribute_type AS ENUM ('INT', 'STRING', 'BOOL', 'DATE', 'FLOAT');
@@ -110,14 +124,14 @@ CREATE TYPE attribute_type AS ENUM ('INT', 'STRING', 'BOOL', 'DATE', 'FLOAT');
 CREATE TABLE
     rank_attributes (
         id BIGINT PRIMARY KEY,
-        rank_id BIGINT NOT NULL,
         attribute_name VARCHAR(100) NOT NULL,
         attribute_type attribute_type NOT NULL,
         is_enum BOOLEAN NOT NULL,
         is_mandatory BOOLEAN NOT NULL,
         unit_id BIGINT NULL,
         description VARCHAR(255) NULL,
-        enum_values JSONB NULL
+        enum_values JSONB NULL,
+        measurement_unit_id BIGINT NULL
     );
 
 ALTER TABLE rank_attributes ADD CONSTRAINT chk_attribute_name CHECK (rank_attributes.attribute_name <> '');
@@ -144,7 +158,6 @@ CREATE TABLE
         value_numeric NUMERIC(18, 5),
         value_boolean BOOLEAN,
         value_date DATE,
-        value_jsonb JSONB,
         PRIMARY KEY (attribute_id, serviceman_id, rank_id)
     );
 
@@ -167,11 +180,6 @@ ALTER TABLE rank_attribute_values ADD CONSTRAINT chk_one_value_type CHECK (
     ) + (
         CASE
             WHEN value_date IS NOT NULL THEN 1
-            ELSE 0
-        END
-    ) + (
-        CASE
-            WHEN value_jsonb IS NOT NULL THEN 1
             ELSE 0
         END
     ) = 1
@@ -264,7 +272,6 @@ CREATE TABLE
         value_numeric NUMERIC(18, 5),
         value_boolean BOOLEAN,
         value_date DATE,
-        value_jsonb JSONB,
         PRIMARY KEY (attribute_id, munition_type_id)
     );
 
@@ -287,11 +294,6 @@ ALTER TABLE munition_type_attribute_values ADD CONSTRAINT chk_one_value_type CHE
     ) + (
         CASE
             WHEN value_date IS NOT NULL THEN 1
-            ELSE 0
-        END
-    ) + (
-        CASE
-            WHEN value_jsonb IS NOT NULL THEN 1
             ELSE 0
         END
     ) = 1

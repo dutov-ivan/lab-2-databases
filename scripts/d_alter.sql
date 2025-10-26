@@ -17,9 +17,6 @@ ALTER COLUMN category_id
 SET
 	NOT NULL;
 
--- 4) rank_attributes: унікальність пари (rank_id, attribute_name)
-ALTER TABLE rank_attributes ADD CONSTRAINT uq_rank_attributes_rank_attr UNIQUE (rank_id, attribute_name);
-
 -- 5) units: додати created_at NOT NULL з DEFAULT поточний час
 ALTER TABLE units
 ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW ();

@@ -1,12 +1,14 @@
-COPY munition_categories (id, name, is_transport)
-FROM
-    '/import/munition_categories.csv'
-WITH
-    (FORMAT csv, HEADER true);
-
+-- Стосується одиниць вимірювання
 COPY measurement_units (id, name, abbreviation)
 FROM
     '/import/measurement_units.csv'
+WITH
+    (FORMAT csv, HEADER true);
+
+-- Стосується амуніції
+COPY munition_categories (id, name, is_transport)
+FROM
+    '/import/munition_categories.csv'
 WITH
     (FORMAT csv, HEADER true);
 
@@ -38,10 +40,43 @@ COPY munition_type_attribute_values (
     value_text,
     value_numeric,
     value_boolean,
-    value_date,
-    value_jsonb
+    value_date
 )
 FROM
     '/import/munition_attribute_values.csv'
+WITH
+    (FORMAT csv, HEADER true);
+
+-- Стосується звань
+COPY rank_categories (id, name, description, min_rank, max_rank)
+FROM
+    '/import/rank_categories.csv'
+WITH
+    (FORMAT csv, HEADER true);
+
+COPY ranks (id, name, category_id, description, rank_value)
+FROM
+    '/import/ranks.csv'
+WITH
+    (FORMAT csv, HEADER true);
+
+COPY rank_attributes (
+    id,
+    attribute_name,
+    attribute_type,
+    is_enum,
+    is_mandatory,
+    measurement_unit_id,
+    description,
+    enum_values
+)
+FROM
+    '/import/rank_attributes.csv'
+WITH
+    (FORMAT csv, HEADER true);
+
+COPY ranks_rank_attributes (rank_id, rank_attribute_id)
+FROM
+    '/import/ranks_rank_attributes.csv'
 WITH
     (FORMAT csv, HEADER true);

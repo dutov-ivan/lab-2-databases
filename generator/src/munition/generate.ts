@@ -16,11 +16,11 @@ type MunitionAttributeRow = {
   attributeName: string;
   attributeType: AttributeType;
   is_mandatory: boolean;
-  is_enum?: boolean;
-  enum_values?: string;
-  description?: string;
+  is_enum: boolean | null;
+  enum_values: string | null;
+  description: string | null;
   munition_category_id: number;
-  measurement_unit_id?: number;
+  measurement_unit_id: number | null;
 };
 
 type MunitionTypeRow = {
@@ -36,7 +36,6 @@ type MunitionAttributeValueRow = {
   value_numeric: number | null;
   value_boolean: boolean | null;
   value_date: string | null;
-  value_jsonb: string | null;
 };
 
 type MunitionRows = {
@@ -83,10 +82,10 @@ export const initializeMunition = (
         attributeType: attr.type,
         is_mandatory: attr.is_required,
         munition_category_id: categoryId,
-        description: attr.description,
+        description: attr.description || null,
         is_enum: attr.is_enum,
         enum_values: JSON.stringify(attr.enum_values),
-        measurement_unit_id: physicalUnitId,
+        measurement_unit_id: physicalUnitId || null,
       });
       attributeId++;
     }
@@ -107,7 +106,6 @@ export const initializeMunition = (
           value_numeric: null,
           value_boolean: null,
           value_date: null,
-          value_jsonb: null,
         };
 
         if (attr.is_enum && attr.enum_values) {
@@ -129,10 +127,6 @@ export const initializeMunition = (
           result.value_boolean = faker.datatype.boolean();
         } else if (attr.attributeType === "DATE") {
           result.value_date = faker.date.past().toISOString().split("T")[0]!;
-        } else if (attr.attributeType === "JSONB") {
-          result.value_jsonb = JSON.stringify({
-            info: faker.lorem.sentence(),
-          });
         }
         munitionTypeValues.push(result);
       });

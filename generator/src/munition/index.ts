@@ -24,6 +24,6 @@ export const writeMunitionTables = (unitTable: MeasurementUnitRow[]) => {
   saveAsCsv(munitionTables.values, {
     producesFile: true,
     filename: "munition_attribute_values.csv",
-    quotedColumns: ["value_text", "value_jsonb"],
+    quotedColumns: ["value_text"],
   });
 };

@@ -13,7 +13,7 @@ ALTER TABLE servicemen_specialties ADD CONSTRAINT fk_servicemen_specialties_spec
 -- Стосується звань
 ALTER TABLE ranks ADD CONSTRAINT fk_ranks_category FOREIGN KEY (category_id) REFERENCES rank_categories (id);
 
-ALTER TABLE rank_attributes ADD CONSTRAINT fk_rank_attributes_rank FOREIGN KEY (rank_id) REFERENCES ranks (id);
+ALTER TABLE rank_attributes ADD CONSTRAINT fk_rank_attributes_measurement_unit FOREIGN KEY (measurement_unit_id) REFERENCES measurement_units (id);
 
 ALTER TABLE ranks_rank_attributes ADD CONSTRAINT rank_id_fk FOREIGN KEY (rank_id) REFERENCES ranks (id);
 
