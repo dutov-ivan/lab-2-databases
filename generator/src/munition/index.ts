@@ -1,8 +1,8 @@
 import { categories } from "./data";
 import { saveAsCsv } from "../utils/file";
 import { initializeMunition } from "./generate";
-import { UNITS } from "../units/data";
-import type { MeasurementUnitRow } from "../units/generate";
+import { UNITS } from "../measurement_units/data";
+import type { MeasurementUnitRow } from "../measurement_units/generate";
 
 export const writeMunitionTables = (unitTable: MeasurementUnitRow[]) => {
   const munitionTables = initializeMunition(categories, unitTable);

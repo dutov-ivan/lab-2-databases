@@ -1,5 +1,5 @@
 import type { AttributeType } from "../common/AttributeType";
-import type { UNITS } from "../units/data";
+import type { UNITS } from "../measurement_units/data";
 
 export type MunitionCategory = {
   name: string; // Наприклад, "автомати", "гранатомети", "гранати", "БПЛА" тощо

@@ -1,4 +1,4 @@
-import type { MeasurementUnitRow } from "../units/generate";
+import type { MeasurementUnitRow } from "../measurement_units/generate";
 import { saveAsCsv } from "../utils/file";
 import { RANK_ATTRIBUTES, RANK_CATEGORIES, RANKS } from "./data";
 import { generateRankTables } from "./generate";

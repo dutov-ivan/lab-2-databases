@@ -1,5 +1,5 @@
 import type { AttributeType } from "../common/AttributeType";
-import type { UNITS } from "../units/data";
+import type { UNITS } from "../measurement_units/data";
 
 export type GeneratedRank = {
   name: string; // Назва рангу (наприклад, "Молодший лейнтенант", "Капітан 3 рангу", "Коммодор" тощо)

@@ -1,7 +1,7 @@
 import { writeMunitionTables } from "./src/munition";
 import { writeRankTables } from "./src/ranks";
 import { writeServicemen } from "./src/servicemen";
-import { writeUnitTable } from "./src/units";
+import { writeUnitTable } from "./src/measurement_units";
 
 const unitTable = writeUnitTable();
 

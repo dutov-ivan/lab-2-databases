@@ -4,7 +4,7 @@ import type {
   GeneratedRankAttribute,
   GeneratedRankCategory,
 } from "./data";
-import type { MeasurementUnitRow } from "../units/generate";
+import type { MeasurementUnitRow } from "../measurement_units/generate";
 import { findOrThrow } from "../utils/findOrThrow";
 
 type RankCategoryRow = {

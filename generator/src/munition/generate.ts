@@ -1,6 +1,6 @@
 import { type MunitionCategory } from "./data";
 import { type AttributeType } from "../common/AttributeType";
-import type { MeasurementUnitRow } from "../units/generate";
+import type { MeasurementUnitRow } from "../measurement_units/generate";
 import { faker } from "../utils/faker";
 
 type MunitionCategoryRow = {
