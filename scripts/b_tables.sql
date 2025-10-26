@@ -198,21 +198,21 @@ CREATE TABLE
         parent_unit_id BIGINT,
         captain_id BIGINT NOT NULL,
         location_id BIGINT NOT NULL,
-        organizational_level_id BIGINT NOT NULL
+        unit_level_id BIGINT NOT NULL
     );
 
 ALTER TABLE units ADD CONSTRAINT chk_units_name CHECK (units.name <> '');
 
 CREATE TABLE
-    organizational_levels (
+    unit_levels (
         id BIGINT PRIMARY KEY,
         name VARCHAR(100) NOT NULL UNIQUE,
         level INT NOT NULL
     );
 
-ALTER TABLE organizational_levels ADD CONSTRAINT chk_level CHECK (organizational_levels.level >= 0);
+ALTER TABLE unit_levels ADD CONSTRAINT chk_level CHECK (unit_levels.level >= 0);
 
-ALTER TABLE organizational_levels ADD CONSTRAINT chk_name CHECK (organizational_levels.name <> '');
+ALTER TABLE unit_levels ADD CONSTRAINT chk_name CHECK (unit_levels.name <> '');
 
 CREATE TABLE
     locations (

@@ -34,7 +34,7 @@ ALTER TABLE units ADD CONSTRAINT fk_units_captain FOREIGN KEY (captain_id) REFER
 
 ALTER TABLE units ADD CONSTRAINT fk_units_location FOREIGN KEY (location_id) REFERENCES locations (id);
 
-ALTER TABLE units ADD CONSTRAINT fk_units_organizational_level FOREIGN KEY (organizational_level_id) REFERENCES organizational_levels (id);
+ALTER TABLE units ADD CONSTRAINT fk_units_unit_level FOREIGN KEY (unit_level_id) REFERENCES unit_levels (id);
 
 -- Стосується амуніції
 ALTER TABLE munition_types ADD CONSTRAINT fk_munition_types_munition_category FOREIGN KEY (category_id) REFERENCES munition_categories (id);

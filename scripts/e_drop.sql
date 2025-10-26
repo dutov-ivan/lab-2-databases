@@ -18,7 +18,7 @@ DROP CONSTRAINT uq_rank_attribute_values;
 
 -- 5. Видалення CHECK-обмеження на максимальний організаційний рівень
 ALTER TABLE rank_categories
-DROP CONSTRAINT chk_max_organizational_level;
+DROP CONSTRAINT chk_max_unit_level;
 
 -- 6. Видалення FOREIGN KEY (зв'язок значень атрибутів звання та військовослужбовця)
 ALTER TABLE rank_attribute_values

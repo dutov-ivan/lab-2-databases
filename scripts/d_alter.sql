@@ -21,8 +21,8 @@ SET
 ALTER TABLE units
 ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW ();
 
--- 6) organizational_levels: змінити тип level на SMALLINT (економія пам'яті)
-ALTER TABLE organizational_levels
+-- 6) unit_levels: змінити тип level на SMALLINT (економія пам'яті)
+ALTER TABLE unit_levels
 ALTER COLUMN level TYPE SMALLINT;
 
 -- 7) munition_supplies: встановити DEFAULT 0 для quantity
