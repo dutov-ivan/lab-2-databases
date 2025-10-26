@@ -15,7 +15,7 @@ saveAsCsv(servicemen, {
 const physicalUnits = initializeUnits(units);
 saveAsCsv(physicalUnits, {
   producesFile: true,
-  filename: "physical_units.csv",
+  filename: "measurement_units.csv",
   quotedColumns: ["name", "abbreviation"],
 });
 

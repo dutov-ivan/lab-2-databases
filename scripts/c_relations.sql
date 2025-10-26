@@ -16,11 +16,15 @@ ADD CONSTRAINT fk_military_specialties_category
 FOREIGN KEY (category_id)
 REFERENCES military_specialty_categories(id);
 
-CREATE TABLE  servicemen_specialties (
-    serviceman_id BIGINT REFERENCES servicemen(id),
-    specialty_id BIGINT REFERENCES military_specialties(id),
-    PRIMARY KEY (serviceman_id, specialty_id)
-);
+ALTER TABLE servicemen_specialties
+ADD CONSTRAINT fk_servicemen_specialties_serviceman
+FOREIGN KEY (serviceman_id)
+REFERENCES servicemen(id);
+
+ALTER TABLE servicemen_specialties
+ADD CONSTRAINT fk_servicemen_specialties_specialty
+FOREIGN KEY (specialty_id)
+REFERENCES military_specialties(id);    
 
 -- Стосується звань
 
@@ -31,6 +35,21 @@ REFERENCES rank_categories(id);
 
 ALTER TABLE rank_attributes
 ADD CONSTRAINT fk_rank_attributes_rank
+FOREIGN KEY (rank_id)
+REFERENCES ranks(id);
+
+ALTER TABLE ranks_rank_attributes
+ADD CONSTRAINT rank_id_fk
+FOREIGN KEY (rank_id)
+REFERENCES ranks(id);
+
+ALTER TABLE ranks_rank_attributes
+ADD CONSTRAINT rank_attribute_id_fk
+FOREIGN KEY (rank_attribute_id)
+REFERENCES rank_attributes(id);
+
+ALTER TABLE rank_attribute_values
+ADD CONSTRAINT fk_rank_attribute_values_rank
 FOREIGN KEY (rank_id)
 REFERENCES ranks(id);
 
@@ -92,20 +111,20 @@ FOREIGN KEY (category_id)
 REFERENCES munition_categories(id);
 
 ALTER TABLE munition_category_attributes
-ADD CONSTRAINT fk_munition_category_attributes_physical_unit
-FOREIGN KEY (physical_unit_id)
-REFERENCES physical_units(id);
+ADD CONSTRAINT fk_munition_category_attributes_measurement_unit
+FOREIGN KEY (measurement_unit_id)
+REFERENCES measurement_units(id);
 
-ALTER TABLE munition_category_attribute_values
-ADD CONSTRAINT fk_munition_category_attribute_values_attribute
+ALTER TABLE munition_type_attribute_values
+ADD CONSTRAINT fk_munition_type_attribute_values_attribute
 FOREIGN KEY (attribute_id)
 REFERENCES munition_category_attributes(id);
 
-ALTER TABLE munition_category_attribute_values
-ADD CONSTRAINT fk_munition_category_attribute_values_munition_type
+ALTER TABLE munition_type_attribute_values
+ADD CONSTRAINT fk_munition_type_attribute_values_munition_type
 FOREIGN KEY (munition_type_id)
 REFERENCES munition_types(id);
 
-ALTER TABLE munition_category_attribute_values
-ADD CONSTRAINT uq_munition_category_attribute_values
+ALTER TABLE munition_type_attribute_values
+ADD CONSTRAINT uq_munition_type_attribute_values
 UNIQUE(attribute_id, munition_type_id);

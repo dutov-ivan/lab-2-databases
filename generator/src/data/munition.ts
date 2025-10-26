@@ -1,3 +1,4 @@
+import type { AttributeType } from "./AttributeType";
 import type { units } from "./units";
 
 export type MunitionCategory = {
@@ -6,14 +7,6 @@ export type MunitionCategory = {
   type_names: string[]; // Типи в цій категорії (наприклад, для "автомати" це можуть бути "АК-74", "М4", "FAMAS" тощо)
   attributes: MunitionAttribute[]; // Атрибути, специфічні для цієї категорії (наприклад, "калібр" чи "макс. дальність польоту")
 };
-
-export type AttributeType =
-  | "INT"
-  | "STRING"
-  | "BOOL"
-  | "DATE"
-  | "FLOAT"
-  | "JSONB";
 
 type MunitionAttribute = {
   name: string; // Назва атрибута (наприклад, "калібр", "макс. дальність польоту")
