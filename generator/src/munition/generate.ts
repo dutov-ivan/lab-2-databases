@@ -1,7 +1,7 @@
-import { type MunitionCategory } from "./data";
-import { type AttributeType } from "../common/AttributeType";
-import type { MeasurementUnitRow } from "../measurement_units/generate";
-import { faker } from "../utils/faker";
+import { type MunitionCategory } from "./data.ts";
+import { type AttributeType } from "../common/AttributeType.ts";
+import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
+import { faker } from "../utils/faker.ts";
 
 type MunitionCategoryRow = {
   id: number;

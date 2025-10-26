@@ -1,4 +1,4 @@
-import { faker } from "../utils/faker";
+import { faker } from "../utils/faker.ts";
 
 export type Serviceman = {
   id: number;

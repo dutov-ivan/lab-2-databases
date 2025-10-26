@@ -1,5 +1,5 @@
-import { saveAsCsv } from "../utils/file";
-import { UNITS } from "./data";
+import { saveAsCsv } from "../utils/file.ts";
+import { UNITS } from "./data.ts";
 import { generateUnitTable, type MeasurementUnitRow } from "./generate";
 
 export const writeUnitTable = (): MeasurementUnitRow[] => {

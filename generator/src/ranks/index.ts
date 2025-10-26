@@ -1,7 +1,7 @@
-import type { MeasurementUnitRow } from "../measurement_units/generate";
-import { saveAsCsv } from "../utils/file";
-import { RANK_ATTRIBUTES, RANK_CATEGORIES, RANKS } from "./data";
-import { generateRankTables } from "./generate";
+import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
+import { saveAsCsv } from "../utils/file.ts";
+import { RANK_ATTRIBUTES, RANK_CATEGORIES, RANKS } from "./data.ts";
+import { generateRankTables } from "./generate.ts";
 
 export const writeRankTables = (unitTable: MeasurementUnitRow[]) => {
   const { ranks, rankAttributes, rankAttributeRanks, rankCategories } =

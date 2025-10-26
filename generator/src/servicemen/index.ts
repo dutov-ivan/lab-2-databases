@@ -1,5 +1,5 @@
-import { saveAsCsv } from "../utils/file";
-import { generateServicemen } from "./generate";
+import { saveAsCsv } from "../utils/file.ts";
+import { generateServicemen } from "./generate.ts";
 
 export const writeServicemen = () => {
   const servicemen = generateServicemen(1000);

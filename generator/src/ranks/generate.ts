@@ -1,11 +1,11 @@
-import type { AttributeType } from "../common/AttributeType";
+import type { AttributeType } from "../common/AttributeType.ts";
 import type {
   GeneratedRank,
   GeneratedRankAttribute,
   GeneratedRankCategory,
-} from "./data";
-import type { MeasurementUnitRow } from "../measurement_units/generate";
-import { findOrThrow } from "../utils/findOrThrow";
+} from "./data.ts";
+import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
+import { findOrThrow } from "../utils/findOrThrow.ts";
 
 type RankCategoryRow = {
   id: number;

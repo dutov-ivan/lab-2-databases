@@ -1,14 +1,13 @@
-import { mkdir } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 
 const importPath = (file: string) => {
-  return `import/${file}`;
+  return path.join("import", file);
 };
 
 const createImportDirIfNotExists = async () => {
-  const importDir = Bun.file(importPath(""));
-  if (!importDir.exists()) {
-    await mkdir(importPath(""));
-  }
+  // mkdir with { recursive: true } is safe whether or not the dir exists
+  await mkdir(importPath(""), { recursive: true });
 };
 
 export type SaveOptions<T> = {
@@ -24,7 +23,7 @@ export const saveAsCsv = async <T extends Record<string, any>>(
   await createImportDirIfNotExists();
   const filePath = options.filename ? importPath(options.filename) : undefined;
   if (!data || data.length === 0) {
-    if (filePath) Bun.write(filePath, "");
+    if (filePath) await writeFile(filePath, "", "utf8");
     return;
   }
 
@@ -54,7 +53,7 @@ export const saveAsCsv = async <T extends Record<string, any>>(
 
   if (filePath) {
     console.log(`Saving CSV to ${filePath}`);
-    Bun.write(filePath, csvContent);
+    await writeFile(filePath, csvContent, "utf8");
   } else {
     return csvContent;
   }
