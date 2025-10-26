@@ -1,4 +1,9 @@
-export const units: PhysicalUnit[] = [
+export type MeasurementUnit = {
+  name: string;
+  abbreviation: string;
+};
+
+export const UNITS: MeasurementUnit[] = [
   {
     name: "Міліметр",
     abbreviation: "мм",
@@ -128,8 +133,3 @@ export const units: PhysicalUnit[] = [
     abbreviation: "кВт",
   },
 ] as const;
-
-export type PhysicalUnit = {
-  name: string;
-  abbreviation: string;
-};

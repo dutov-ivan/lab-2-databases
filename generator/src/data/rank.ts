@@ -1,5 +1,5 @@
-import type { AttributeType } from "./AttributeType";
-import type { units } from "./units";
+import type { AttributeType } from "../common/AttributeType";
+import type { UNITS } from "../units/data";
 
 export type GeneratedRank = {
   name: string; // Назва рангу (наприклад, "Молодший лейнтенант", "Капітан 3 рангу", "Коммодор" тощо)
@@ -20,7 +20,7 @@ export type GeneratedRankAttribute = {
   type: AttributeType; // Тип даних атрибута;
   is_enum: boolean; // Чи є цей атрибут таким, що має обмежений набір значень (ENUM)
   is_required: boolean; // Чи є цей атрибут обов'язковим для заповнення
-  unit?: (typeof units)[number]["abbreviation"]; // Одиниця виміру, якщо застосовно (має бути одним із значень масиву units, наприклад, "рік", "місяць" тощо)
+  unit?: (typeof UNITS)[number]["abbreviation"]; // Одиниця виміру, якщо застосовно (має бути одним із значень масиву units, наприклад, "рік", "місяць" тощо)
   description?: string; // Опис атрибута для кращого розуміння його призначення
   enum_values?: string[]; // Якщо тип ENUM, то можливі значення
   assignedToRanks?: string[]; // Масив назв рангів, яким призначений цей атрибут (використовується, якщо атрибут не є універсальним для всіх рангів)

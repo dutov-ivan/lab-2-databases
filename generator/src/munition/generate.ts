@@ -1,63 +1,63 @@
-import type { AttributeType } from "./data/AttributeType";
-import type { GeneratedRankCategory } from "./data/rank";
-import type { units } from "./data/units";
-import type { MeasurementUnitTable } from "./units";
+import { type MunitionCategory } from "./data";
+import { type AttributeType } from "../common/AttributeType";
+import type { MeasurementUnitRow } from "../units/generate";
+import { faker } from "../utils/faker";
 
-type RankCategoryTable = {
+type MunitionCategoryRow = {
   id: number;
   name: string;
-  description: string;
-  minRank: number;
-  maxRank: number;
+  is_transport: boolean;
+  description?: string;
 };
 
-type RankAttributeTable = {
-  name: string; // Назва атрибута (наприклад, "дата закінчення академії", "дата присвоєння генеральського звання" тощо)
-  type: AttributeType; // Тип даних атрибута;
-  is_enum: boolean; // Чи є цей атрибут таким, що має обмежений набір значень (ENUM)
-  is_required: boolean; // Чи є цей атрибут обов'язковим для заповнення
-  unit?: (typeof units)[number]["abbreviation"]; // Одиниця виміру, якщо застосовно (має бути одним із значень масиву units, наприклад, "рік", "місяць" тощо)
-  description?: string; // Опис атрибута для кращого розуміння його призначення
-  enum_values?: string[]; // Якщо тип ENUM, то можливі значення
+type MunitionAttributeRow = {
+  id: number;
+
+  attributeName: string;
+  attributeType: AttributeType;
+  is_mandatory: boolean;
+  is_enum?: boolean;
+  enum_values?: string;
+  description?: string;
+  munition_category_id: number;
+  measurement_unit_id?: number;
 };
 
-type RankAttributeToRankTable = {
-  rank_id: number; // Ідентифікатор рангу
-  attribute_id: number; // Ідентифікатор атрибута
-};
-
-type RankTable = {
+type MunitionTypeRow = {
   id: number;
   name: string;
-  description: string;
-  rankValue: number;
+  munition_category_id: number;
 };
 
-type RankAttributeValueTable = {
-  id: number;
+type MunitionAttributeValueRow = {
+  attribute_id: number;
+  munition_type_id: number;
+  value_text: string | null;
+  value_numeric: number | null;
+  value_boolean: boolean | null;
+  value_date: string | null;
+  value_jsonb: string | null;
 };
 
-type RankTables = {
-  categories: RankCategoryTable[];
-  attributes: RankAttributeTable[];
-  ranks: RankTable[];
-  rankAttributes: RankAttributeToRankTable[];
+type MunitionRows = {
+  categories: MunitionCategoryRow[];
+  attributes: MunitionAttributeRow[];
+  types: MunitionTypeRow[];
+  values: MunitionAttributeValueRow[];
 };
 
-export const initializeRanks = (
-  categories: GeneratedRankCategory[],
-  physicalUnits: MeasurementUnitTable[]
-): RankTables => {
-  const rankCategories: RankCategoryTable[] = [];
-  const rankAttributes: RankAttributeTable[] = [];
-  const ranks: RankTable[] = [];
-  const rankAttributeValues: RankAttributeValueTable[] = [];
+export const initializeMunition = (
+  categories: MunitionCategory[],
+  physicalUnits: MeasurementUnitRow[]
+): MunitionRows => {
+  const munitionCategories: MunitionCategoryRow[] = [];
+  const munitionAttributes: MunitionAttributeRow[] = [];
+  const munitionTypes: MunitionTypeRow[] = [];
+  const munitionTypeValues: MunitionAttributeValueRow[] = [];
 
   let categoryId = 1;
   let typeId = 1;
   let attributeId = 1;
-
-  let attributeValueId = 1;
 
   for (const category of categories) {
     munitionCategories.push({
@@ -100,8 +100,7 @@ export const initializeRanks = (
       .filter((attr) => attr.munition_category_id === categoryId)
       .forEach((attr) => {
         // TODO: Not include non-mandatory attributes sometimes
-        let result: MunitionAttributeValueTable = {
-          id: attributeValueId,
+        let result: MunitionAttributeValueRow = {
           attribute_id: attr.id,
           munition_type_id: munitionType.id,
           value_text: null,
@@ -135,7 +134,6 @@ export const initializeRanks = (
             info: faker.lorem.sentence(),
           });
         }
-        attributeValueId++;
         munitionTypeValues.push(result);
       });
   }

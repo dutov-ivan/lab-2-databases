@@ -1,4 +1,4 @@
-import { faker } from "./faker";
+import { faker } from "../utils/faker";
 
 export type Serviceman = {
   id: number;
@@ -9,7 +9,7 @@ export type Serviceman = {
   birthDate: Date; // YYYY-MM-DD
 };
 
-export const initializeServicemen = (count: number): Serviceman[] => {
+export const generateServicemen = (count: number): Serviceman[] => {
   const servicemen: Serviceman[] = [];
   for (let i = 0; i < count; i++) {
     const gender = faker.person.sexType();
