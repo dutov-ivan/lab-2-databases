@@ -53,7 +53,8 @@ CREATE TABLE
     military_specialty_categories (
         id BIGINT PRIMARY KEY,
         name VARCHAR(100) NOT NULL UNIQUE,
-        code INT NOT NULL UNIQUE
+        code INT NOT NULL UNIQUE,
+        parent_category_id BIGINT
     );
 
 ALTER TABLE military_specialty_categories ADD CONSTRAINT chk_msc_code CHECK (code > 0);

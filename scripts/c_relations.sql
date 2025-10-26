@@ -6,6 +6,8 @@ ALTER TABLE servicemen ADD CONSTRAINT fk_servicemen_unit FOREIGN KEY (unit_id) R
 -- Стосується військових спеціальностей
 ALTER TABLE military_specialties ADD CONSTRAINT fk_military_specialties_category FOREIGN KEY (category_id) REFERENCES military_specialty_categories (id);
 
+ALTER TABLE military_specialty_categories ADD CONSTRAINT fk_military_specialty_categories_parent FOREIGN KEY (parent_category_id) REFERENCES military_specialty_categories (id);
+
 ALTER TABLE servicemen_specialties ADD CONSTRAINT fk_servicemen_specialties_serviceman FOREIGN KEY (serviceman_id) REFERENCES servicemen (id);
 
 ALTER TABLE servicemen_specialties ADD CONSTRAINT fk_servicemen_specialties_specialty FOREIGN KEY (specialty_id) REFERENCES military_specialties (id);
