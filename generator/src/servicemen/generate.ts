@@ -96,6 +96,8 @@ export const assignUnitsToServicemen = (
 export type SpecialtyServicemenRow = {
   servicemanId: number;
   specialtyId: number;
+  attainedAt: string;
+  proficiencyLevel: number;
 };
 
 export const assignSpecialtiesToServicemen = (
@@ -113,6 +115,8 @@ export const assignSpecialtiesToServicemen = (
       specialtyServicemen.push({
         servicemanId: serviceman.id,
         specialtyId,
+        attainedAt: toSqlDate(faker.date.past({ years: 5 })),
+        proficiencyLevel: faker.number.int({ min: 1, max: 5 }),
       });
     }
   }

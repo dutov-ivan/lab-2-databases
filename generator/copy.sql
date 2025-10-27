@@ -163,7 +163,12 @@ FROM
 WITH
     (FORMAT csv, HEADER true);
 
-COPY servicemen_specialties (serviceman_id, specialty_id)
+COPY servicemen_specialties (
+    serviceman_id,
+    specialty_id,
+    attained_at,
+    proficiency_level
+)
 FROM
     '/import/servicemen_specialties.csv'
 WITH

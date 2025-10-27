@@ -23,7 +23,8 @@ CREATE TABLE
         phone_number VARCHAR(15) UNIQUE,
         email VARCHAR(100) UNIQUE,
         current_rank_id BIGINT NOT NULL,
-        unit_id BIGINT NOT NULL
+        unit_id BIGINT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW ()
     );
 
 ALTER TABLE servicemen ADD CONSTRAINT chk_dates CHECK (
@@ -73,8 +74,12 @@ CREATE TABLE
     servicemen_specialties (
         serviceman_id BIGINT,
         specialty_id BIGINT,
+        attained_at DATE NOT NULL,
+        proficiency_level INT NOT NULL,
         PRIMARY KEY (serviceman_id, specialty_id)
     );
+
+ALTER TABLE servicemen_specialties ADD CONSTRAINT chk_proficiency_level CHECK (proficiency_level BETWEEN 1 AND 5);
 
 -- Стосується звань
 CREATE TABLE
