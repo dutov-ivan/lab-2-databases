@@ -2,6 +2,8 @@ import { type MunitionCategory } from "./data.ts";
 import { type AttributeEnum } from "../common/AttributeType.ts";
 import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
 import { faker } from "../utils/faker.ts";
+import type { Unit } from "../units/generate.ts";
+import { findOrThrow } from "../utils/findOrThrow.ts";
 
 type MunitionCategoryRow = {
   id: number;
@@ -38,17 +40,23 @@ type MunitionAttributeValueRow = {
   value_date: string | null;
 };
 
-type MunitionRows = {
+export type MunitionTables = {
   categories: MunitionCategoryRow[];
   attributes: MunitionAttributeRow[];
   types: MunitionTypeRow[];
   values: MunitionAttributeValueRow[];
 };
 
+export type MunitionSupplyRow = {
+  quantity: number;
+  unit_id: number;
+  munition_type_id: number;
+};
+
 export const initializeMunition = (
   categories: MunitionCategory[],
   physicalUnits: MeasurementUnitRow[]
-): MunitionRows => {
+): MunitionTables => {
   const munitionCategories: MunitionCategoryRow[] = [];
   const munitionAttributes: MunitionAttributeRow[] = [];
   const munitionTypes: MunitionTypeRow[] = [];
@@ -137,4 +145,47 @@ export const initializeMunition = (
     types: munitionTypes,
     values: munitionTypeValues,
   };
+};
+
+export const generateMunitionSupplies = (
+  units: Unit[],
+  munitionTypes: MunitionTypeRow[],
+  munitionCategory: MunitionCategoryRow[],
+  mostTypesPerUnit: number
+): MunitionSupplyRow[] => {
+  const maxLevel = Math.max(...units.map((u) => u.level_id));
+  const leastUnit = units.filter((u) => u.level_id === maxLevel);
+
+  const munitionSupplies: MunitionSupplyRow[] = [];
+  for (const unit of leastUnit) {
+    const typesCount = faker.number.int({ min: 1, max: mostTypesPerUnit });
+    const selectedTypes = faker.helpers.arrayElements(
+      munitionTypes,
+      typesCount
+    );
+
+    for (const type of selectedTypes) {
+      const is_transport = findOrThrow(munitionCategory, (cat) => {
+        return cat.id === type.munition_category_id;
+      }).is_transport;
+      const quantity = faker.number.int(
+        is_transport
+          ? {
+              min: 1,
+              max: 20,
+            }
+          : {
+              min: 10,
+              max: 1000,
+            }
+      );
+
+      munitionSupplies.push({
+        unit_id: unit.id,
+        munition_type_id: type.id,
+        quantity,
+      });
+    }
+  }
+  return munitionSupplies;
 };

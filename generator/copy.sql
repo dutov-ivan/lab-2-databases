@@ -156,3 +156,9 @@ FROM
     '/import/rank_attribute_values.csv'
 WITH
     (FORMAT csv, HEADER true);
+
+COPY munition_supplies (unit_id, munition_type_id, quantity)
+FROM
+    '/import/munition_supplies.csv'
+WITH
+    (FORMAT csv, HEADER true);

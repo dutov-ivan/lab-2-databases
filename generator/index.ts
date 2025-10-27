@@ -1,4 +1,7 @@
-import { writeMunitionTables } from "./src/munition/index.ts";
+import {
+  writeMunitionSupplies,
+  writeMunitionTables,
+} from "./src/munition/index.ts";
 import {
   writeRankAttributeValues,
   writeRankTables,
@@ -7,16 +10,18 @@ import { writeUnitTable } from "./src/measurement_units/index.ts";
 import { writeMilitarySpecialties } from "./src/military_specialties/index.ts";
 import { writeServicemenAndUnits } from "./src/servicemen_units/index.ts";
 
-const unitTable = writeUnitTable();
+const measurementUnits = writeUnitTable();
 
-writeMunitionTables(unitTable);
+const munitionTables = writeMunitionTables(measurementUnits);
 
-const rankTables = writeRankTables(unitTable);
+const rankTables = writeRankTables(measurementUnits);
 
 await writeMilitarySpecialties(true);
 
-const { servicemen } = writeServicemenAndUnits(
+const { servicemen, units } = writeServicemenAndUnits(
   rankTables.ranks.map((rank) => rank.id)
 );
 
 writeRankAttributeValues(rankTables, servicemen);
+
+writeMunitionSupplies(units, munitionTables);
