@@ -159,8 +159,9 @@ CREATE TABLE
         rank_id BIGINT NOT NULL,
         attribute_id BIGINT NOT NULL,
         serviceman_id BIGINT NOT NULL,
+        value_int INT,
         value_text TEXT,
-        value_numeric NUMERIC(18, 5),
+        value_float NUMERIC(18, 5),
         value_boolean BOOLEAN,
         value_date DATE,
         PRIMARY KEY (attribute_id, serviceman_id, rank_id)
@@ -169,12 +170,17 @@ CREATE TABLE
 ALTER TABLE rank_attribute_values ADD CONSTRAINT chk_one_value_type CHECK (
     (
         CASE
+            WHEN value_int IS NOT NULL THEN 1
+            ELSE 0
+        END
+    ) + (
+        CASE
             WHEN value_text IS NOT NULL THEN 1
             ELSE 0
         END
     ) + (
         CASE
-            WHEN value_numeric IS NOT NULL THEN 1
+            WHEN value_float IS NOT NULL THEN 1
             ELSE 0
         END
     ) + (
@@ -279,8 +285,9 @@ CREATE TABLE
     munition_type_attribute_values (
         attribute_id BIGINT NOT NULL,
         munition_type_id BIGINT NOT NULL,
+        value_int INT,
         value_text TEXT,
-        value_numeric NUMERIC(18, 5),
+        value_float NUMERIC(18, 5),
         value_boolean BOOLEAN,
         value_date DATE,
         PRIMARY KEY (attribute_id, munition_type_id)
@@ -289,12 +296,17 @@ CREATE TABLE
 ALTER TABLE munition_type_attribute_values ADD CONSTRAINT chk_one_value_type CHECK (
     (
         CASE
+            WHEN value_int IS NOT NULL THEN 1
+            ELSE 0
+        END
+    ) + (
+        CASE
             WHEN value_text IS NOT NULL THEN 1
             ELSE 0
         END
     ) + (
         CASE
-            WHEN value_numeric IS NOT NULL THEN 1
+            WHEN value_float IS NOT NULL THEN 1
             ELSE 0
         END
     ) + (

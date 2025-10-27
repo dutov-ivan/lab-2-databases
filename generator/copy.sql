@@ -37,8 +37,9 @@ WITH
 COPY munition_type_attribute_values (
     attribute_id,
     munition_type_id,
+    value_int,
     value_text,
-    value_numeric,
+    value_float,
     value_boolean,
     value_date
 )
@@ -147,8 +148,9 @@ COPY rank_attribute_values (
     rank_id,
     attribute_id,
     serviceman_id,
+    value_int,
     value_text,
-    value_numeric,
+    value_float,
     value_boolean,
     value_date
 )

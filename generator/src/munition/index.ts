@@ -2,7 +2,7 @@ import { categories } from "./data.ts";
 import { saveAsCsv } from "../utils/file.ts";
 import {
   generateMunitionSupplies,
-  initializeMunition,
+  generateMunitionTables,
   type MunitionSupplyRow,
   type MunitionTables,
 } from "./generate.ts";
@@ -12,7 +12,7 @@ import type { Unit } from "../units/generate.ts";
 export const writeMunitionTables = (
   unitTable: MeasurementUnitRow[]
 ): MunitionTables => {
-  const munitionTables = initializeMunition(categories, unitTable);
+  const munitionTables = generateMunitionTables(categories, unitTable);
   saveAsCsv(munitionTables.categories, {
     producesFile: true,
     filename: "munition_categories.csv",

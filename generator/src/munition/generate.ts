@@ -1,5 +1,10 @@
 import { type MunitionCategory } from "./data.ts";
-import { type AttributeEnum } from "../common/AttributeType.ts";
+import {
+  randomAttributeValue,
+  type Attribute,
+  type AttributeEnum,
+  type AttributeValue,
+} from "../common/AttributeType.ts";
 import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
 import { faker } from "../utils/faker.ts";
 import type { Unit } from "../units/generate.ts";
@@ -12,14 +17,10 @@ type MunitionCategoryRow = {
   description?: string;
 };
 
-type MunitionAttributeRow = {
+type MunitionAttributeRow = Attribute & {
   id: number;
-
   attributeName: string;
-  attributeType: AttributeEnum;
   is_mandatory: boolean;
-  is_enum: boolean | null;
-  enum_values: string | null;
   description: string | null;
   munition_category_id: number;
   measurement_unit_id: number | null;
@@ -31,13 +32,9 @@ type MunitionTypeRow = {
   munition_category_id: number;
 };
 
-type MunitionAttributeValueRow = {
+type MunitionAttributeValueRow = AttributeValue & {
   attribute_id: number;
   munition_type_id: number;
-  value_text: string | null;
-  value_numeric: number | null;
-  value_boolean: boolean | null;
-  value_date: string | null;
 };
 
 export type MunitionTables = {
@@ -53,7 +50,7 @@ export type MunitionSupplyRow = {
   munition_type_id: number;
 };
 
-export const initializeMunition = (
+export const generateMunitionTables = (
   categories: MunitionCategory[],
   physicalUnits: MeasurementUnitRow[]
 ): MunitionTables => {
@@ -110,32 +107,14 @@ export const initializeMunition = (
         let result: MunitionAttributeValueRow = {
           attribute_id: attr.id,
           munition_type_id: munitionType.id,
+          value_int: null,
           value_text: null,
-          value_numeric: null,
+          value_float: null,
           value_boolean: null,
           value_date: null,
         };
 
-        if (attr.is_enum && attr.enum_values) {
-          const enumVals: string[] = JSON.parse(attr.enum_values);
-          const randomEnumValue =
-            enumVals[Math.floor(Math.random() * enumVals.length)];
-          result.value_text = randomEnumValue!;
-        } else if (attr.attributeType === "INT") {
-          result.value_numeric = faker.number.int({ min: 0, max: 10000 });
-        } else if (attr.attributeType === "FLOAT") {
-          result.value_numeric = faker.number.float({
-            min: 0,
-            max: 10000,
-            fractionDigits: 2,
-          });
-        } else if (attr.attributeType === "STRING") {
-          result.value_text = faker.lorem.words(3);
-        } else if (attr.attributeType === "BOOL") {
-          result.value_boolean = faker.datatype.boolean();
-        } else if (attr.attributeType === "DATE") {
-          result.value_date = faker.date.past().toISOString().split("T")[0]!;
-        }
+        randomAttributeValue(attr, result);
         munitionTypeValues.push(result);
       });
   }

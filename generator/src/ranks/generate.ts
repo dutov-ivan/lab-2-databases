@@ -49,8 +49,9 @@ type RankAttributeValueRow = {
   rank_id: number;
   attribute_id: number;
   serviceman_id: number;
+  value_int: number | null;
   value_text: string | null;
-  value_numeric: number | null;
+  value_float: number | null;
   value_boolean: boolean | null;
   value_date: string | null;
 };
@@ -173,8 +174,9 @@ export const generateRankAttributeValues = (
         rank_id: servicemanRank.id,
         attribute_id: attr.id,
         serviceman_id: serviceman.id,
+        value_int: null,
         value_text: null,
-        value_numeric: null,
+        value_float: null,
         value_boolean: null,
         value_date: null,
       };

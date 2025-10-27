@@ -9,8 +9,9 @@ export interface Attribute {
 }
 
 export interface AttributeValue {
+  value_int: number | null;
   value_text: string | null;
-  value_numeric: number | null;
+  value_float: number | null;
   value_boolean: boolean | null;
   value_date: string | null;
 }
@@ -25,15 +26,15 @@ export const randomAttributeValue = (
       enumVals[Math.floor(Math.random() * enumVals.length)];
     result.value_text = randomEnumValue!;
   } else if (attr.attributeType === "INT") {
-    result.value_numeric = faker.number.int({ min: 0, max: 10000 });
+    result.value_int = faker.number.int({ min: 0, max: 10000 });
   } else if (attr.attributeType === "FLOAT") {
-    result.value_numeric = faker.number.float({
+    result.value_float = faker.number.float({
       min: 0,
-      max: 10000,
+      max: 1000,
       fractionDigits: 2,
     });
   } else if (attr.attributeType === "STRING") {
-    result.value_text = faker.lorem.words(3);
+    result.value_text = faker.word.words(3);
   } else if (attr.attributeType === "BOOL") {
     result.value_boolean = faker.datatype.boolean();
   } else if (attr.attributeType === "DATE") {
