@@ -1,19 +1,36 @@
-import { faker } from "../utils/faker";
-import { findOrThrow } from "../utils/findOrThrow";
-import type { UnitLevel } from "./data";
-import type { LocationRow } from "./location";
+import type { ServicemanWithUnit } from "../servicemen/generate.ts";
+import { faker } from "../utils/faker.ts";
+import type { UnitLevel } from "./data.ts";
+import type { LocationRow } from "./location.ts";
 
-type UnitNode = {
+export interface UnitData {
   name: string;
   level_id: number;
   location_id: number;
-  children: UnitNode[];
+  children: UnitData[];
+}
+
+export type UnitWithoutCaptain = {
+  id: number;
+  name: string;
+  parent_id: number | null;
+  location_id: number;
+  level_id: number;
+};
+
+export type Unit = {
+  id: number;
+  name: string;
+  parent_id: number | null;
+  captain_id: number;
+  location_id: number;
+  level_id: number;
 };
 
 const generateUnitNode = (
   locations: LocationRow[],
   levels: UnitLevel[]
-): UnitNode => {
+): UnitData => {
   return {
     name: faker.word.noun(),
     level_id: faker.helpers.arrayElement(levels).id,
@@ -22,17 +39,42 @@ const generateUnitNode = (
   };
 };
 
-const generateUnitTree = (
+const traverseAndAssignParentIds = (start: UnitData): UnitWithoutCaptain[] => {
+  const units: UnitWithoutCaptain[] = [];
+  const stack = [{ node: start, parentId: null as number | null }];
+  stack.push({ node: start, parentId: null });
+  let currentId = 1;
+
+  while (stack.length > 0) {
+    const { node: currentNode, parentId } = stack.pop()!;
+
+    units.push({
+      id: currentId++,
+      name: currentNode.name,
+      parent_id: parentId,
+      location_id: currentNode.location_id,
+      level_id: currentNode.level_id,
+    });
+
+    for (const child of currentNode.children) {
+      stack.push({ node: child, parentId: currentId - 1 });
+    }
+  }
+
+  return units;
+};
+
+export const generateUnitsWithoutCaptain = (
   count: number,
-  locations: LocationRow[],
-  levels: UnitLevel[]
-) => {
+  levels: UnitLevel[],
+  locations: LocationRow[]
+): UnitWithoutCaptain[] => {
   let remainingNodes = count;
-  const rootNode: UnitNode = generateUnitNode(locations, levels);
+  const rootNode: UnitData = generateUnitNode(locations, levels);
 
   remainingNodes--;
 
-  let levelsWithNodes: UnitNode[][] = [];
+  let levelsWithNodes: UnitData[][] = [];
   for (let i = 0; i < levels.length; i++) {
     levelsWithNodes.push([]);
   }
@@ -54,13 +96,20 @@ const generateUnitTree = (
     }
   }
 
-  return rootNode;
+  return traverseAndAssignParentIds(rootNode);
 };
 
-export const generateUnitsWithoutCaptain = (
-  count: number,
-  levels: UnitLevel[],
-  locations: LocationRow[]
-) => {
-  generateUnitTree(count, locations, levels);
+export const assignCaptainsToUnits = (
+  units: UnitWithoutCaptain[],
+  serviceman: ServicemanWithUnit[]
+): Unit[] => {
+  return units.map((unit) => {
+    const captain = faker.helpers.arrayElement(
+      serviceman.filter((s) => s.unitId === unit.id)
+    );
+    return {
+      ...unit,
+      captain_id: captain.id,
+    };
+  });
 };

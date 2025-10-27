@@ -1,16 +1,41 @@
 import { faker } from "../utils/faker.ts";
 
-export type Serviceman = {
+export const serviceTypes = [
+  "conscription", // строкова служба
+  "contract", // контрактна служба
+  "mobilized", // служба за призовом під час мобілізації
+  "officer_draft", // офіцерська служба за призовом
+  "reserve", // служба в резерві
+  "volunteer", // доброволець / тероборона
+  "other", // інші (для спецслужб, місій тощо)
+] as const;
+
+export type ServiceType = (typeof serviceTypes)[number];
+
+export interface ServicemanWithoutRelations {
   id: number;
-  firstName: string;
   lastName: string;
+  firstName: string;
   middleName: string;
-  gender: string; // 'male' | 'female' etc. — keep string for compatibility with faker
   birthDate: Date; // YYYY-MM-DD
+  sex: string; // 'male' | 'female' etc. — keep string for compatibility with faker
+  serviceType: ServiceType;
+  enlistmentDate: Date;
+  dischargeDate: Date | null;
+  phoneNumber: string | null;
+  email: string | null;
+  rankId: number;
+}
+
+export type ServicemanWithUnit = ServicemanWithoutRelations & {
+  unitId: number;
 };
 
-export const generateServicemen = (count: number): Serviceman[] => {
-  const servicemen: Serviceman[] = [];
+export const generateServicemenWithoutUnit = (
+  count: number,
+  rankIds: number[]
+): ServicemanWithoutRelations[] => {
+  const servicemen: ServicemanWithoutRelations[] = [];
   for (let i = 0; i < count; i++) {
     const gender = faker.person.sexType();
 
@@ -19,10 +44,32 @@ export const generateServicemen = (count: number): Serviceman[] => {
       firstName: faker.person.firstName(gender),
       lastName: faker.person.lastName(gender),
       middleName: faker.person.middleName(gender),
-      gender: gender,
       birthDate: faker.date.birthdate({ min: 18, max: 60, mode: "age" }),
+      sex: gender == "female" ? "F" : "M",
+      serviceType: faker.helpers.arrayElement(serviceTypes),
+      enlistmentDate: faker.date.past({ years: 10 }),
+      dischargeDate: faker.datatype.boolean({ probability: 0.7 })
+        ? faker.date.future({ years: 3 })
+        : null,
+      phoneNumber: faker.datatype.boolean({ probability: 0.8 })
+        ? faker.phone.number({ style: "international" })
+        : null,
+      email: faker.datatype.boolean({ probability: 0.9 })
+        ? faker.internet.email()
+        : null,
+      rankId: faker.helpers.arrayElement(rankIds),
     });
   }
 
   return servicemen;
+};
+
+export const assignUnitsToServicemen = (
+  servicemen: ServicemanWithoutRelations[],
+  unitIds: number[]
+): ServicemanWithUnit[] => {
+  return servicemen.map((serviceman, i) => ({
+    ...serviceman,
+    unitId: unitIds[i] ?? faker.helpers.arrayElement(unitIds),
+  }));
 };

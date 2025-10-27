@@ -92,3 +92,35 @@ FROM
     '/import/military_specialties.csv'
 WITH
     (FORMAT csv, HEADER true);
+
+COPY locations (id, name, longitude, latitude)
+FROM
+    '/import/locations.csv'
+WITH
+    (FORMAT csv, HEADER true);
+
+ALTER TABLE units (parent_unit_id)
+DROP CONSTRAINT fk_units_parent_unit;
+
+COPY units (id, name, level, location_id, parent_unit_id)
+FROM
+    '/import/units.csv';
+
+COPY servicemen (
+    id,
+    last_name,
+    first_name,
+    middle_name,
+    date_of_birth,
+    sex,
+    phone_number,
+    email,
+    rank_id,
+    unit_id
+)
+FROM
+    '/import/servicemen.csv'
+WITH
+    (FORMAT csv, HEADER true);
+
+ALTER TABLE units ADD CONSTRAINT fk_units_parent_unit FOREIGN KEY (parent_unit_id) REFERENCES units (id);

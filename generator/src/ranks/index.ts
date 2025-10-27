@@ -3,7 +3,7 @@ import { saveAsCsv } from "../utils/file.ts";
 import { RANK_ATTRIBUTES, RANK_CATEGORIES, RANKS } from "./data.ts";
 import { generateRankTables } from "./generate.ts";
 
-export const writeRankTables = (unitTable: MeasurementUnitRow[]) => {
+export const writeRankTables = (unitTable: MeasurementUnitRow[]): number[] => {
   const { ranks, rankAttributes, rankAttributeRanks, rankCategories } =
     generateRankTables(RANK_CATEGORIES, RANK_ATTRIBUTES, RANKS, unitTable);
 
@@ -29,4 +29,5 @@ export const writeRankTables = (unitTable: MeasurementUnitRow[]) => {
     producesFile: true,
     filename: "ranks_rank_attributes.csv",
   });
+  return ranks.map((rank) => rank.id);
 };
