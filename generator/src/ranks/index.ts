@@ -1,12 +1,25 @@
 import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
+import type { ServicemanWithUnit } from "../servicemen/generate.ts";
 import { saveAsCsv } from "../utils/file.ts";
 import { RANK_ATTRIBUTES, RANK_CATEGORIES, RANKS } from "./data.ts";
-import { generateRankTables } from "./generate.ts";
+import {
+  generateRankAttributeValues,
+  generateRankTables,
+  type RankTables,
+} from "./generate.ts";
 
-export const writeRankTables = (unitTable: MeasurementUnitRow[]): number[] => {
-  const { ranks, rankAttributes, rankAttributeRanks, rankCategories } =
-    generateRankTables(RANK_CATEGORIES, RANK_ATTRIBUTES, RANKS, unitTable);
+export const writeRankTables = (
+  unitTable: MeasurementUnitRow[]
+): RankTables => {
+  const rankTables = generateRankTables(
+    RANK_CATEGORIES,
+    RANK_ATTRIBUTES,
+    RANKS,
+    unitTable
+  );
 
+  const { rankCategories, ranks, rankAttributes, rankAttributeRanks } =
+    rankTables;
   saveAsCsv(rankCategories, {
     producesFile: true,
     filename: "rank_categories.csv",
@@ -29,5 +42,23 @@ export const writeRankTables = (unitTable: MeasurementUnitRow[]): number[] => {
     producesFile: true,
     filename: "ranks_rank_attributes.csv",
   });
-  return ranks.map((rank) => rank.id);
+  return rankTables;
+};
+
+export const writeRankAttributeValues = (
+  ranksTables: RankTables,
+  servicemen: ServicemanWithUnit[]
+): void => {
+  const { ranks, rankAttributes, rankAttributeRanks } = ranksTables;
+  const rankAttributeValues = generateRankAttributeValues(
+    ranks,
+    rankAttributeRanks,
+    rankAttributes,
+    servicemen
+  );
+  saveAsCsv(rankAttributeValues, {
+    producesFile: true,
+    filename: "rank_attribute_values.csv",
+    quotedColumns: ["value_text"],
+  });
 };

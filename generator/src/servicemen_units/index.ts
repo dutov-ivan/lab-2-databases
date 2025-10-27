@@ -1,16 +1,25 @@
 import {
   assignUnitsToServicemen,
   generateServicemenWithoutUnit,
+  type ServicemanWithUnit,
 } from "../servicemen/generate.ts";
 import { UNIT_LEVELS } from "../units/data.ts";
 import {
   assignCaptainsToUnits,
   generateUnitsWithoutCaptain,
+  type Unit,
 } from "../units/generate.ts";
 import { generateLocations } from "../units/location.ts";
 import { saveAsCsv } from "../utils/file.ts";
 
-export const writeServicemenAndUnits = (rankIds: number[]) => {
+export type ServicemenAndUnits = {
+  servicemen: ServicemanWithUnit[];
+  units: Unit[];
+};
+
+export const writeServicemenAndUnits = (
+  rankIds: number[]
+): ServicemenAndUnits => {
   const locations = generateLocations(50);
   const unitsWithoutCaptain = generateUnitsWithoutCaptain(
     100,
@@ -54,4 +63,6 @@ export const writeServicemenAndUnits = (rankIds: number[]) => {
     producesFile: true,
     filename: "units.csv",
   });
+
+  return { servicemen, units };
 };

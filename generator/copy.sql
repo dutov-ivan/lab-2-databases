@@ -142,3 +142,17 @@ WITH
     (FORMAT csv, HEADER true);
 
 ALTER TABLE units ADD CONSTRAINT fk_units_captain FOREIGN KEY (captain_id) REFERENCES servicemen (id);
+
+COPY rank_attribute_values (
+    rank_id,
+    attribute_id,
+    serviceman_id,
+    value_text,
+    value_numeric,
+    value_boolean,
+    value_date
+)
+FROM
+    '/import/rank_attribute_values.csv'
+WITH
+    (FORMAT csv, HEADER true);

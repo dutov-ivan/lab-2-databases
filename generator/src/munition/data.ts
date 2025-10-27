@@ -1,4 +1,4 @@
-import type { AttributeType } from "../common/AttributeType";
+import type { AttributeEnum } from "../common/AttributeType";
 import type { UNITS } from "../measurement_units/data";
 
 export type MunitionCategory = {
@@ -10,7 +10,7 @@ export type MunitionCategory = {
 
 type MunitionAttribute = {
   name: string; // Назва атрибута (наприклад, "калібр", "макс. дальність польоту")
-  type: AttributeType; // Тип даних атрибута;
+  type: AttributeEnum; // Тип даних атрибута;
   is_enum: boolean; // Чи є цей атрибут таким, що має обмежений набір значень (ENUM)
   is_required: boolean; // Чи є цей атрибут обов'язковим для заповнення
   unit?: (typeof UNITS)[number]["abbreviation"]; // Одиниця виміру, якщо застосовно (має бути одним із значень масиву units, наприклад, "мм", "км", "кг" тощо)

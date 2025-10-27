@@ -1,5 +1,5 @@
 import { type MunitionCategory } from "./data.ts";
-import { type AttributeType } from "../common/AttributeType.ts";
+import { type AttributeEnum } from "../common/AttributeType.ts";
 import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
 import { faker } from "../utils/faker.ts";
 
@@ -14,7 +14,7 @@ type MunitionAttributeRow = {
   id: number;
 
   attributeName: string;
-  attributeType: AttributeType;
+  attributeType: AttributeEnum;
   is_mandatory: boolean;
   is_enum: boolean | null;
   enum_values: string | null;

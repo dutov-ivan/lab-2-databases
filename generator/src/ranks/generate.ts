@@ -1,4 +1,8 @@
-import type { AttributeType } from "../common/AttributeType.ts";
+import {
+  randomAttributeValue as setRandomAttributeValue,
+  type Attribute,
+  type AttributeEnum,
+} from "../common/AttributeType.ts";
 import type {
   GeneratedRank,
   GeneratedRankAttribute,
@@ -6,6 +10,8 @@ import type {
 } from "./data.ts";
 import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
 import { findOrThrow } from "../utils/findOrThrow.ts";
+import type { ServicemanWithUnit } from "../servicemen/generate.ts";
+import { faker } from "../utils/faker.ts";
 
 type RankCategoryRow = {
   id: number;
@@ -15,16 +21,16 @@ type RankCategoryRow = {
   maxRank: number;
 };
 
-type RankAttributeRow = {
+interface RankAttributeRow extends Attribute {
   id: number;
   name: string; // Назва атрибута (наприклад, "дата закінчення академії", "дата присвоєння генеральського звання" тощо)
-  type: AttributeType; // Тип даних атрибута;
+  attributeType: AttributeEnum; // Тип даних атрибута;
   is_enum: boolean; // Чи є цей атрибут таким, що має обмежений набір значень (ENUM)
   is_required: boolean; // Чи є цей атрибут обов'язковим для заповнення
   measurement_unit_id: number | null;
   description: string | null;
   enum_values: string | null;
-};
+}
 
 type RankAttributeToRankRow = {
   rank_id: number; // Ідентифікатор рангу
@@ -49,7 +55,7 @@ type RankAttributeValueRow = {
   value_date: string | null;
 };
 
-type RankTables = {
+export type RankTables = {
   rankCategories: RankCategoryRow[];
   ranks: RankRow[];
   rankAttributes: RankAttributeRow[];
@@ -99,7 +105,7 @@ export const generateRankTables = (
     rankAttributes.push({
       id: attributeId,
       name: attr.name,
-      type: attr.type,
+      attributeType: attr.type,
       is_enum: attr.is_enum,
       is_required: attr.is_required,
       measurement_unit_id:
@@ -128,4 +134,55 @@ export const generateRankTables = (
     ranks: rankTables,
     rankAttributeRanks: rankAttributeToRank,
   };
+};
+
+export const generateRankAttributeValues = (
+  ranks: RankRow[],
+  rankAttributeRanks: RankAttributeToRankRow[],
+  rankAttributes: RankAttributeRow[],
+  servicemen: ServicemanWithUnit[]
+): RankAttributeValueRow[] => {
+  const allRankAttributesForEachRank: Map<number, RankAttributeRow[]> =
+    new Map();
+
+  for (const rank of ranks) {
+    const availableRankAttributes = rankAttributeRanks
+      .filter((rar) => rar.rank_id === rank.id)
+      .map((rar) =>
+        findOrThrow(rankAttributes, (attr) => attr.id === rar.attribute_id)
+      );
+    allRankAttributesForEachRank.set(rank.id, availableRankAttributes);
+  }
+
+  const rankAttributeValues: RankAttributeValueRow[] = [];
+
+  for (const serviceman of servicemen) {
+    const servicemanRank = findOrThrow(
+      ranks,
+      (rank) => rank.id === serviceman.rankId
+    );
+
+    const chosenRankAttributes = allRankAttributesForEachRank
+      .get(servicemanRank.id)
+      ?.filter((attr) => {
+        return attr.is_required || faker.datatype.boolean();
+      })!;
+
+    for (const attr of chosenRankAttributes) {
+      let result: RankAttributeValueRow = {
+        rank_id: servicemanRank.id,
+        attribute_id: attr.id,
+        serviceman_id: serviceman.id,
+        value_text: null,
+        value_numeric: null,
+        value_boolean: null,
+        value_date: null,
+      };
+
+      setRandomAttributeValue(attr, result);
+
+      rankAttributeValues.push(result);
+    }
+  }
+  return rankAttributeValues;
 };
