@@ -52,8 +52,8 @@ ALTER TABLE servicemen ADD CONSTRAINT chk_email_format CHECK (
 CREATE TABLE
     military_specialty_categories (
         id BIGINT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL UNIQUE,
-        code INT NOT NULL UNIQUE,
+        name TEXT NOT NULL UNIQUE,
+        code VARCHAR(10) NOT NULL UNIQUE,
         parent_category_id BIGINT
     );
 
@@ -64,7 +64,8 @@ ALTER TABLE military_specialty_categories ADD CONSTRAINT chk_msc_name CHECK (mil
 CREATE TABLE
     military_specialties (
         id BIGINT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL UNIQUE,
+        name TEXT NOT NULL UNIQUE,
+        code VARCHAR(10) NOT NULL UNIQUE,
         category_id BIGINT
     );
 

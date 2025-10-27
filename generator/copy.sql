@@ -80,3 +80,15 @@ FROM
     '/import/ranks_rank_attributes.csv'
 WITH
     (FORMAT csv, HEADER true);
+
+COPY military_specialty_categories (id, name, code, parent_category_id)
+FROM
+    '/import/military_specialty_categories.csv'
+WITH
+    (FORMAT csv, HEADER true);
+
+COPY military_specialties (id, name, code, category_id)
+FROM
+    '/import/military_specialties.csv'
+WITH
+    (FORMAT csv, HEADER true);
