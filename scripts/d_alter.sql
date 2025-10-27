@@ -1,10 +1,10 @@
--- 1) servicemen: додати emergency_contact_phone (NOT NULL + DEFAULT '') та перевірку формату
+-- 1) servicemen: додати emergency_contact_phone_number (NOT NULL + DEFAULT '') та перевірку формату
 ALTER TABLE servicemen
-ADD COLUMN emergency_contact_phone VARCHAR(15) NOT NULL DEFAULT '';
+ADD COLUMN emergency_contact_phone_number VARCHAR(15) NOT NULL DEFAULT '';
 
-ALTER TABLE servicemen ADD CONSTRAINT chk_emergency_contact_phone_format CHECK (
-	emergency_contact_phone = ''
-	OR emergency_contact_phone SIMILAR TO '\\+?[0-9]{7,15}'
+ALTER TABLE servicemen ADD CONSTRAINT chk_emergency_contact_phone_number_format CHECK (
+	emergency_contact_phone_number = ''
+	OR emergency_contact_phone_number SIMILAR TO '\\+?[0-9]{7,15}'
 );
 
 -- 2) servicemen: збільшити довжину email

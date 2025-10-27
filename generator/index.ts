@@ -17,7 +17,7 @@ const munitionTables = writeMunitionTables(measurementUnits);
 
 const rankTables = writeRankTables(measurementUnits);
 
-const militarySpecialtyTables = await writeMilitarySpecialties(true);
+const militarySpecialtyTables = await writeMilitarySpecialties(false);
 
 const { servicemen, units } = writeServicemenAndUnits(
   rankTables.ranks.map((rank) => rank.id)

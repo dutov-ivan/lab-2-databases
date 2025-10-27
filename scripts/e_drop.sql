@@ -2,7 +2,7 @@ BEGIN;
 
 -- 1. Видалення CHECK-обмеження формату телефону
 ALTER TABLE servicemen
-DROP CONSTRAINT chk_phone_format;
+DROP CONSTRAINT chk_phone_number_format;
 
 -- 2. Видалення CHECK-обмеження формату email перед дропом стовпця
 ALTER TABLE servicemen

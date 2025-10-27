@@ -23,7 +23,12 @@ export const loadSpecialtiesFromGovernmentSite =
   async (): Promise<ScrapedData> => {
     const browser = await chromium.launch();
     const page = await browser.newPage();
-    await page.goto("https://zakon.rada.gov.ua/laws/show/z0927-20#Text");
+    await page.goto("https://zakon.rada.gov.ua/laws/show/z0927-20#Text", {
+      waitUntil: "networkidle", // wait for JS rendering
+    });
+    // ensure the table is present
+    await page.waitForSelector(".rvps14 table");
+
     const content = await page.content();
     await browser.close();
 
@@ -34,99 +39,82 @@ export const loadSpecialtiesFromGovernmentSite =
     );
     console.log(`Found ${specialtyTable.length} specialty tables`);
 
-    // This stack holds the *parent category object* for each level.
-    const parentStack: ScrapedCategory[] = [];
-
-    // The flat list of all categories as required by ScrapedData
+    const parentStack: (ScrapedCategory | undefined)[] = [];
     const categories: ScrapedCategory[] = [];
-
-    // The flat list of all specialties
     const specialties: ScrapedSpecialty[] = [];
 
-    // --- Changes Start Here ---
-
-    // Counter to generate unique, stable IDs for categories
-    let categoryIdCounter = 0;
-
-    // Tracks the ID of the most recently added category.
+    // Use IDs starting at 1 (less ambiguous than 0)
+    let categoryIdCounter = 1;
     let currentCategoryId: number | null = null;
 
-    // --- Changes End Here ---
-
     specialtyTable.find("tr").each((i, row) => {
-      if (i < 2) return; // Skip header rows
+      if (i < 2) return; // skip headers if needed
 
       const cells = $(row).find("td");
 
       if (cells.length === 1) {
-        // This is a Category row
         const text = cells.first().text().trim();
         const index = text.indexOf(" ");
-        if (index === -1) return; // Skip if format is unexpected
+        if (index === -1) {
+          console.warn("Skipping category row with unexpected format:", text);
+          return;
+        }
 
         const numbering = text.substring(0, index).trim();
         const name = text.substring(index).trim();
 
         const level = numbering.split(".").filter(Boolean).length;
-        const parent = parentStack[level - 1];
+        // convert to 0-based index
+        const levelIndex = level - 1;
 
-        // --- Changes Start Here ---
+        // parent sits at levelIndex - 1 (or undefined for top-level)
+        const parent = levelIndex > 0 ? parentStack[levelIndex - 1] : undefined;
 
-        // 1. Create a new stable ID
         const newId = categoryIdCounter++;
-
-        // 2. Create the new category with its ID
         const newCategory: ScrapedCategory = {
           id: newId,
           code: numbering,
           name,
         };
-        if (parent) {
-          newCategory.parentCategory = parent;
-        }
+        if (parent) newCategory.parentCategory = parent;
 
-        // Add to the flat list
         categories.push(newCategory);
-
-        // 3. Update the current ID to this new ID
         currentCategoryId = newId;
 
-        // --- Changes End Here ---
+        // set stack at 0-based levelIndex and trim deeper levels
+        parentStack[levelIndex] = newCategory;
+        parentStack.length = levelIndex + 1;
 
-        // Place this new category on the stack at its level
-        parentStack[level] = newCategory;
-        parentStack.length = level + 1;
+        console.log(
+          `Category: id=${newId} code=${numbering} level=${level} parent=${
+            parent?.id ?? null
+          }`
+        );
       } else if (cells.length === 2) {
-        // This is a Specialty row
         const code = cells.first().text().trim();
         const name = cells.last().text().trim();
 
-        if (!name || name[0] === "{") {
-          // Skipping the invalid row 997
-          return;
-        }
+        if (!name || name[0] === "{") return;
 
-        // 4. Check against the currentCategoryId
         if (currentCategoryId === null) {
           console.warn(`Found specialty before any category: ${code} ${name}`);
           return;
         }
 
-        // 5. Link the specialty to the stable ID
         specialties.push({
           code,
           name,
           parentCategoryId: currentCategoryId,
         });
 
-        // --- Changes End Here ---
-      } else if (cells.length > 2) {
+        console.log(
+          `Specialty: code=${code} -> parentCategoryId=${currentCategoryId}`
+        );
+      } else {
+        // ignore other rows
         return;
       }
     });
 
-    return {
-      categories,
-      specialties,
-    };
+    return { categories, specialties };
   };

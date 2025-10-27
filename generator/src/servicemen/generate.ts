@@ -37,8 +37,28 @@ export const generateServicemenWithoutUnit = (
   rankIds: number[]
 ): ServicemanWithoutRelations[] => {
   const servicemen: ServicemanWithoutRelations[] = [];
+  const phones = new Set<string>();
+  const emails = new Set<string>();
+
   for (let i = 0; i < count; i++) {
     const gender = faker.person.sexType();
+
+    let phoneNumber: string | null = null;
+    if (faker.datatype.boolean({ probability: 0.9 })) {
+      do {
+        phoneNumber = faker.phone.number({ style: "international" });
+      } while (phones.has(phoneNumber));
+      phones.add(phoneNumber);
+    }
+
+    let email: string | null = null;
+
+    if (faker.datatype.boolean({ probability: 0.4 })) {
+      do {
+        email = faker.internet.email();
+      } while (emails.has(email));
+      emails.add(email);
+    }
 
     servicemen.push({
       id: i + 1,
@@ -54,12 +74,8 @@ export const generateServicemenWithoutUnit = (
       dischargeDate: faker.datatype.boolean({ probability: 0.7 })
         ? toSqlDate(faker.date.future({ years: 3 }))
         : null,
-      phoneNumber: faker.datatype.boolean({ probability: 0.8 })
-        ? faker.phone.number({ style: "international" })
-        : null,
-      email: faker.datatype.boolean({ probability: 0.9 })
-        ? faker.internet.email()
-        : null,
+      phoneNumber,
+      email,
       rankId: faker.helpers.arrayElement(rankIds),
     });
   }

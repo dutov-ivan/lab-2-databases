@@ -20,10 +20,10 @@ CREATE TABLE
         service_type service_type NOT NULL,
         enlistment_date DATE NOT NULL,
         discharge_date DATE,
-        phone VARCHAR(15),
-        email VARCHAR(100),
-        current_rank_id BIGINT,
-        unit_id BIGINT
+        phone_number VARCHAR(15) UNIQUE,
+        email VARCHAR(100) UNIQUE,
+        current_rank_id BIGINT NOT NULL,
+        unit_id BIGINT NOT NULL
     );
 
 ALTER TABLE servicemen ADD CONSTRAINT chk_dates CHECK (
@@ -38,9 +38,9 @@ ALTER TABLE servicemen ADD CONSTRAINT chk_names CHECK (
 
 ALTER TABLE servicemen ADD CONSTRAINT date_of_birth_check CHECK (date_of_birth <= CURRENT_DATE);
 
-ALTER TABLE servicemen ADD CONSTRAINT chk_phone_format CHECK (
-    phone SIMILAR TO '(\+?[0-9]{7,15})'
-    OR phone IS NULL
+ALTER TABLE servicemen ADD CONSTRAINT chk_phone_number_format CHECK (
+    phone_number SIMILAR TO '(\+?[0-9]{7,15})'
+    OR phone_number IS NULL
 );
 
 ALTER TABLE servicemen ADD CONSTRAINT chk_email_format CHECK (
@@ -52,19 +52,17 @@ ALTER TABLE servicemen ADD CONSTRAINT chk_email_format CHECK (
 CREATE TABLE
     military_specialty_categories (
         id BIGINT PRIMARY KEY,
-        name TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
         code VARCHAR(10) NOT NULL UNIQUE,
         parent_category_id BIGINT
     );
-
-ALTER TABLE military_specialty_categories ADD CONSTRAINT chk_msc_code CHECK (code > 0);
 
 ALTER TABLE military_specialty_categories ADD CONSTRAINT chk_msc_name CHECK (military_specialty_categories.name <> '');
 
 CREATE TABLE
     military_specialties (
         id BIGINT PRIMARY KEY,
-        name TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
         code VARCHAR(10) NOT NULL UNIQUE,
         category_id BIGINT
     );
@@ -82,7 +80,7 @@ CREATE TABLE
 CREATE TABLE
     ranks (
         id BIGINT PRIMARY KEY,
-        name VARCHAR(50) NOT NULL UNIQUE,
+        name VARCHAR(100) NOT NULL UNIQUE,
         description VARCHAR(255) DEFAULT NULL,
         category_id BIGINT,
         rank_value INT NOT NULL
