@@ -14,7 +14,7 @@ type MilitarySpecialtyCategoryRow = {
   parent_category_id: number | null;
 };
 
-type MilitarySpecialtyTables = {
+export type MilitarySpecialtyTables = {
   specialties: MilitarySpecialtyRow[];
   categories: MilitarySpecialtyCategoryRow[];
 };

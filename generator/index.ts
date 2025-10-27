@@ -9,6 +9,7 @@ import {
 import { writeUnitTable } from "./src/measurement_units/index.ts";
 import { writeMilitarySpecialties } from "./src/military_specialties/index.ts";
 import { writeServicemenAndUnits } from "./src/servicemen_units/index.ts";
+import { writeServicemenSpecialties } from "./src/servicemen/index.ts";
 
 const measurementUnits = writeUnitTable();
 
@@ -16,7 +17,7 @@ const munitionTables = writeMunitionTables(measurementUnits);
 
 const rankTables = writeRankTables(measurementUnits);
 
-await writeMilitarySpecialties(true);
+const militarySpecialtyTables = await writeMilitarySpecialties(true);
 
 const { servicemen, units } = writeServicemenAndUnits(
   rankTables.ranks.map((rank) => rank.id)
@@ -25,3 +26,5 @@ const { servicemen, units } = writeServicemenAndUnits(
 writeRankAttributeValues(rankTables, servicemen);
 
 writeMunitionSupplies(units, munitionTables);
+
+writeServicemenSpecialties(militarySpecialtyTables, servicemen);

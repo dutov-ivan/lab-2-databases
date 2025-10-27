@@ -162,3 +162,9 @@ FROM
     '/import/munition_supplies.csv'
 WITH
     (FORMAT csv, HEADER true);
+
+COPY servicemen_specialties (serviceman_id, specialty_id)
+FROM
+    '/import/servicemen_specialties.csv'
+WITH
+    (FORMAT csv, HEADER true);

@@ -1,12 +1,17 @@
 import { saveAsCsv } from "../utils/file.ts";
-import { generateSpecialties } from "./generate.ts";
+import {
+  generateSpecialties,
+  type MilitarySpecialtyTables,
+} from "./generate.ts";
 import {
   loadSpecialtiesFromGovernmentSite,
   type ScrapedData,
 } from "./scrape.ts";
 import { access, readFile, writeFile } from "fs/promises";
 
-export const writeMilitarySpecialties = async (loadLocally: boolean) => {
+export const writeMilitarySpecialties = async (
+  loadLocally: boolean
+): Promise<MilitarySpecialtyTables> => {
   let loadedSpecialties: ScrapedData;
   if (loadLocally) {
     try {
@@ -41,4 +46,6 @@ export const writeMilitarySpecialties = async (loadLocally: boolean) => {
     filename: "military_specialty_categories.csv",
     quotedColumns: ["code", "name"],
   });
+
+  return { specialties, categories };
 };

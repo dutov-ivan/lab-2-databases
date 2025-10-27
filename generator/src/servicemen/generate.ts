@@ -76,3 +76,29 @@ export const assignUnitsToServicemen = (
     unitId: unitIds[i] ?? faker.helpers.arrayElement(unitIds),
   }));
 };
+
+export type SpecialtyServicemenRow = {
+  servicemanId: number;
+  specialtyId: number;
+};
+
+export const assignSpecialtiesToServicemen = (
+  servicemen: ServicemanWithUnit[],
+  specialtyIds: number[]
+): SpecialtyServicemenRow[] => {
+  const specialtyServicemen: SpecialtyServicemenRow[] = [];
+  for (const serviceman of servicemen) {
+    const specialtiesCount = faker.number.int({ min: 1, max: 3 });
+    const selectedSpecialties = faker.helpers.arrayElements(
+      specialtyIds,
+      specialtiesCount
+    );
+    for (const specialtyId of selectedSpecialties) {
+      specialtyServicemen.push({
+        servicemanId: serviceman.id,
+        specialtyId,
+      });
+    }
+  }
+  return specialtyServicemen;
+};
