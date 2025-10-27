@@ -1,3 +1,4 @@
+import { toSqlDate } from "../utils/date.ts";
 import { faker } from "../utils/faker.ts";
 
 export const serviceTypes = [
@@ -17,11 +18,11 @@ export interface ServicemanWithoutRelations {
   lastName: string;
   firstName: string;
   middleName: string;
-  birthDate: Date; // YYYY-MM-DD
+  birthDate: string; // YYYY-MM-DD
   sex: string; // 'male' | 'female' etc. — keep string for compatibility with faker
   serviceType: ServiceType;
-  enlistmentDate: Date;
-  dischargeDate: Date | null;
+  enlistmentDate: string;
+  dischargeDate: string | null;
   phoneNumber: string | null;
   email: string | null;
   rankId: number;
@@ -44,12 +45,14 @@ export const generateServicemenWithoutUnit = (
       firstName: faker.person.firstName(gender),
       lastName: faker.person.lastName(gender),
       middleName: faker.person.middleName(gender),
-      birthDate: faker.date.birthdate({ min: 18, max: 60, mode: "age" }),
+      birthDate: toSqlDate(
+        faker.date.birthdate({ min: 18, max: 60, mode: "age" })
+      ),
       sex: gender == "female" ? "F" : "M",
       serviceType: faker.helpers.arrayElement(serviceTypes),
-      enlistmentDate: faker.date.past({ years: 10 }),
+      enlistmentDate: toSqlDate(faker.date.past({ years: 10 })),
       dischargeDate: faker.datatype.boolean({ probability: 0.7 })
-        ? faker.date.future({ years: 3 })
+        ? toSqlDate(faker.date.future({ years: 3 }))
         : null,
       phoneNumber: faker.datatype.boolean({ probability: 0.8 })
         ? faker.phone.number({ style: "international" })

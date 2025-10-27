@@ -1,4 +1,4 @@
-import type { ScrapedCategory, ScrapedData } from "./scrape";
+import type { ScrapedData } from "./scrape";
 
 type MilitarySpecialtyRow = {
   id: number;

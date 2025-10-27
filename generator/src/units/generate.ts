@@ -29,10 +29,17 @@ export type Unit = {
 
 const generateUnitNode = (
   locations: LocationRow[],
-  levels: UnitLevel[]
+  levels: UnitLevel[],
+  unitNamesSet: Set<string>
 ): UnitData => {
+  let name: string;
+  do {
+    name = faker.word.words({ count: { min: 2, max: 4 } });
+  } while (unitNamesSet.has(name));
+  unitNamesSet.add(name);
+
   return {
-    name: faker.word.noun(),
+    name,
     level_id: faker.helpers.arrayElement(levels).id,
     location_id: faker.helpers.arrayElement(locations).id,
     children: [],
@@ -42,7 +49,6 @@ const generateUnitNode = (
 const traverseAndAssignParentIds = (start: UnitData): UnitWithoutCaptain[] => {
   const units: UnitWithoutCaptain[] = [];
   const stack = [{ node: start, parentId: null as number | null }];
-  stack.push({ node: start, parentId: null });
   let currentId = 1;
 
   while (stack.length > 0) {
@@ -69,8 +75,10 @@ export const generateUnitsWithoutCaptain = (
   levels: UnitLevel[],
   locations: LocationRow[]
 ): UnitWithoutCaptain[] => {
+  const unitNamesSet = new Set<string>();
+
   let remainingNodes = count;
-  const rootNode: UnitData = generateUnitNode(locations, levels);
+  const rootNode: UnitData = generateUnitNode(locations, levels, unitNamesSet);
 
   remainingNodes--;
 
@@ -84,7 +92,7 @@ export const generateUnitsWithoutCaptain = (
       levelsWithNodes[
         faker.number.int({ min: 1, max: levelsWithNodes.length - 1 }) // Exclude root level
       ]!;
-    currentLevel.push(generateUnitNode(locations, levels));
+    currentLevel.push(generateUnitNode(locations, levels, unitNamesSet));
     remainingNodes--;
   }
 
@@ -107,9 +115,16 @@ export const assignCaptainsToUnits = (
     const captain = faker.helpers.arrayElement(
       serviceman.filter((s) => s.unitId === unit.id)
     );
-    return {
-      ...unit,
+
+    // There won't be units with same captain because the crew is only linked to unit they are in, but not to the units that are higher in hierarchy
+    const newUnit: Unit = {
+      id: unit.id,
+      name: unit.name,
+      parent_id: unit.parent_id,
       captain_id: captain.id,
+      location_id: unit.location_id,
+      level_id: unit.level_id,
     };
+    return newUnit;
   });
 };

@@ -37,15 +37,21 @@ export const writeServicemenAndUnits = (rankIds: number[]) => {
     filename: "servicemen.csv",
   });
 
-  saveAsCsv(units, {
-    quotedColumns: ["name"],
-    producesFile: true,
-    filename: "units.csv",
-  });
-
   saveAsCsv(locations, {
     quotedColumns: ["name"],
     producesFile: true,
     filename: "locations.csv",
+  });
+
+  saveAsCsv(UNIT_LEVELS, {
+    quotedColumns: ["name", "description"],
+    producesFile: true,
+    filename: "unit_levels.csv",
+  });
+
+  saveAsCsv(units, {
+    quotedColumns: ["name"],
+    producesFile: true,
+    filename: "units.csv",
   });
 };

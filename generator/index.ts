@@ -10,6 +10,6 @@ writeMunitionTables(unitTable);
 
 const ranksIds = writeRankTables(unitTable);
 
-await writeMilitarySpecialties(true);
+await writeMilitarySpecialties(false);
 
 writeServicemenAndUnits(ranksIds);

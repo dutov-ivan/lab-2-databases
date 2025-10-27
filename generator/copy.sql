@@ -54,7 +54,7 @@ FROM
 WITH
     (FORMAT csv, HEADER true);
 
-COPY ranks (id, name, category_id, description, rank_value)
+COPY ranks (id, name, description, category_id, rank_value)
 FROM
     '/import/ranks.csv'
 WITH
@@ -99,23 +99,41 @@ FROM
 WITH
     (FORMAT csv, HEADER true);
 
-ALTER TABLE units (parent_unit_id)
-DROP CONSTRAINT fk_units_parent_unit;
-
-COPY units (id, name, level, location_id, parent_unit_id)
+COPY unit_levels (id, name, description, level)
 FROM
-    '/import/units.csv';
+    '/import/unit_levels.csv'
+WITH
+    (FORMAT csv, HEADER true);
+
+ALTER TABLE units
+DROP CONSTRAINT IF EXISTS fk_units_captain;
+
+COPY units (
+    id,
+    name,
+    parent_unit_id,
+    captain_id,
+    location_id,
+    unit_level_id
+)
+FROM
+    '/import/units.csv'
+WITH
+    (FORMAT csv, HEADER true);
 
 COPY servicemen (
     id,
-    last_name,
     first_name,
+    last_name,
     middle_name,
     date_of_birth,
     sex,
+    service_type,
+    enlistment_date,
+    discharge_date,
     phone_number,
     email,
-    rank_id,
+    current_rank_id,
     unit_id
 )
 FROM
@@ -123,4 +141,4 @@ FROM
 WITH
     (FORMAT csv, HEADER true);
 
-ALTER TABLE units ADD CONSTRAINT fk_units_parent_unit FOREIGN KEY (parent_unit_id) REFERENCES units (id);
+ALTER TABLE units ADD CONSTRAINT fk_units_captain FOREIGN KEY (captain_id) REFERENCES servicemen (id);

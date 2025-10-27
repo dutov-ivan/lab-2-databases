@@ -100,7 +100,7 @@ ALTER TABLE ranks ADD CONSTRAINT chk_description_nonempty CHECK (
 CREATE TABLE
     rank_categories (
         id BIGINT PRIMARY KEY,
-        name VARCHAR(50) NOT NULL UNIQUE,
+        name VARCHAR(100) NOT NULL UNIQUE,
         description VARCHAR(255) DEFAULT NULL,
         min_rank INT NOT NULL,
         max_rank INT NOT NULL
@@ -209,12 +209,18 @@ CREATE TABLE
     unit_levels (
         id BIGINT PRIMARY KEY,
         name VARCHAR(100) NOT NULL UNIQUE,
+        description VARCHAR(255) DEFAULT NULL,
         level INT NOT NULL
     );
 
 ALTER TABLE unit_levels ADD CONSTRAINT chk_level CHECK (unit_levels.level >= 0);
 
 ALTER TABLE unit_levels ADD CONSTRAINT chk_name CHECK (unit_levels.name <> '');
+
+ALTER TABLE unit_levels ADD CONSTRAINT chk_description_nonempty CHECK (
+    description IS NULL
+    OR LENGTH (TRIM(description)) > 0
+);
 
 CREATE TABLE
     locations (

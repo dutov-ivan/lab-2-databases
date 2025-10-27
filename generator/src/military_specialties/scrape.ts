@@ -1,22 +1,23 @@
-import { load } from "cheerio";
 import { chromium } from "playwright";
+import { load } from "cheerio";
 
-export type ScrapedCategory = {
-  name: string;
+interface ScrapedCategory {
+  id: number;
   code: string;
-  parentCategory?: ScrapedCategory;
-};
-
-export type ScrapedSpecialty = {
   name: string;
-  code: string;
-  parentCategoryId: number;
-};
+  parentCategory?: ScrapedCategory; // Links to the parent object
+}
 
-export type ScrapedData = {
+interface ScrapedSpecialty {
+  code: string;
+  name: string;
+  parentCategoryId: number; // Refers to ScrapedCategory['id']
+}
+
+export interface ScrapedData {
   categories: ScrapedCategory[];
   specialties: ScrapedSpecialty[];
-};
+}
 
 export const loadSpecialtiesFromGovernmentSite =
   async (): Promise<ScrapedData> => {
@@ -33,48 +34,97 @@ export const loadSpecialtiesFromGovernmentSite =
     );
     console.log(`Found ${specialtyTable.length} specialty tables`);
 
-    let currentLevel = 0;
+    // This stack holds the *parent category object* for each level.
+    const parentStack: ScrapedCategory[] = [];
+
+    // The flat list of all categories as required by ScrapedData
     const categories: ScrapedCategory[] = [];
+
+    // The flat list of all specialties
     const specialties: ScrapedSpecialty[] = [];
+
+    // --- Changes Start Here ---
+
+    // Counter to generate unique, stable IDs for categories
+    let categoryIdCounter = 0;
+
+    // Tracks the ID of the most recently added category.
+    let currentCategoryId: number | null = null;
+
+    // --- Changes End Here ---
+
     specialtyTable.find("tr").each((i, row) => {
       if (i < 2) return; // Skip header rows
 
       const cells = $(row).find("td");
-      if (cells.length == 1) {
+
+      if (cells.length === 1) {
+        // This is a Category row
         const text = cells.first().text().trim();
         const index = text.indexOf(" ");
-        const name = text.substring(index).trim();
+        if (index === -1) return; // Skip if format is unexpected
+
         const numbering = text.substring(0, index).trim();
-        const level = numbering.split(".").length;
-        if (level > currentLevel) {
-          // Subcategory
-          const parent = categories[categories.length - 1];
-          categories.push({ code: numbering, name, parentCategory: parent });
-        } else {
-          // New category
-          categories.push({ code: numbering, name });
+        const name = text.substring(index).trim();
+
+        const level = numbering.split(".").filter(Boolean).length;
+        const parent = parentStack[level - 1];
+
+        // --- Changes Start Here ---
+
+        // 1. Create a new stable ID
+        const newId = categoryIdCounter++;
+
+        // 2. Create the new category with its ID
+        const newCategory: ScrapedCategory = {
+          id: newId,
+          code: numbering,
+          name,
+        };
+        if (parent) {
+          newCategory.parentCategory = parent;
         }
-        currentLevel = level;
+
+        // Add to the flat list
+        categories.push(newCategory);
+
+        // 3. Update the current ID to this new ID
+        currentCategoryId = newId;
+
+        // --- Changes End Here ---
+
+        // Place this new category on the stack at its level
+        parentStack[level] = newCategory;
+        parentStack.length = level + 1;
       } else if (cells.length === 2) {
+        // This is a Specialty row
         const code = cells.first().text().trim();
         const name = cells.last().text().trim();
+
         if (!name || name[0] === "{") {
           // Skipping the invalid row 997
           return;
         }
+
+        // 4. Check against the currentCategoryId
+        if (currentCategoryId === null) {
+          console.warn(`Found specialty before any category: ${code} ${name}`);
+          return;
+        }
+
+        // 5. Link the specialty to the stable ID
         specialties.push({
           code,
           name,
-          parentCategoryId: categories.length - 1,
+          parentCategoryId: currentCategoryId,
         });
-      } else {
-        throw new Error(
-          `Unexpected number of cells in specialty table row: ${
-            cells.length
-          }, text: ${$(row).text()}`
-        );
+
+        // --- Changes End Here ---
+      } else if (cells.length > 2) {
+        return;
       }
     });
+
     return {
       categories,
       specialties,
