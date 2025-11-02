@@ -32,11 +32,13 @@ ALTER TABLE rank_attribute_values ADD CONSTRAINT uq_rank_attribute_values UNIQUE
 -- Стосується підрозділів
 ALTER TABLE units ADD CONSTRAINT fk_units_parent FOREIGN KEY (parent_unit_id) REFERENCES units (id);
 
-ALTER TABLE units ADD CONSTRAINT fk_units_captain FOREIGN KEY (captain_id) REFERENCES servicemen (id);
-
 ALTER TABLE units ADD CONSTRAINT fk_units_location FOREIGN KEY (location_id) REFERENCES locations (id);
 
 ALTER TABLE units ADD CONSTRAINT fk_units_unit_level FOREIGN KEY (unit_level_id) REFERENCES unit_levels (id);
+
+ALTER TABLE unit_members ADD CONSTRAINT fk_unit_members_unit FOREIGN KEY (unit_id) REFERENCES units (id);
+
+ALTER TABLE unit_members ADD CONSTRAINT fk_unit_members_serviceman FOREIGN KEY (serviceman_id) REFERENCES servicemen (id);
 
 -- Стосується амуніції
 ALTER TABLE munition_types ADD CONSTRAINT fk_munition_types_munition_category FOREIGN KEY (category_id) REFERENCES munition_categories (id);

@@ -1,12 +1,9 @@
 import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
-import type { ServicemanWithUnit } from "../servicemen/generate.ts";
+import type { ServicemanRow } from "../servicemen/generate.ts";
 import { saveAsCsv } from "../utils/file.ts";
 import { RANK_ATTRIBUTES, RANK_CATEGORIES, RANKS } from "./data.ts";
-import {
-  generateRankAttributeValues,
-  generateRankTables,
-  type RankTables,
-} from "./generate.ts";
+import { generateRankTables, type RankTables } from "./generate.ts";
+import { generateRankAttributeValues } from "../servicemen/generate.ts";
 
 export const writeRankTables = (
   unitTable: MeasurementUnitRow[]
@@ -47,7 +44,7 @@ export const writeRankTables = (
 
 export const writeRankAttributeValues = (
   ranksTables: RankTables,
-  servicemen: ServicemanWithUnit[]
+  servicemen: ServicemanRow[]
 ): void => {
   const { ranks, rankAttributes, rankAttributeRanks } = ranksTables;
   const rankAttributeValues = generateRankAttributeValues(

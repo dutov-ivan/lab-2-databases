@@ -1,5 +1,13 @@
+import { randomAttributeValue as setRandomAttributeValue } from "../common/AttributeType.ts";
+import type {
+  RankRow,
+  RankAttributeToRankRow,
+  RankAttributeRow,
+  RankAttributeValueRow,
+} from "../ranks/generate.ts";
 import { toSqlDate } from "../utils/date.ts";
 import { faker } from "../utils/faker.ts";
+import { findOrThrow } from "../utils/findOrThrow.ts";
 
 export const serviceTypes = [
   "conscription", // строкова служба
@@ -13,7 +21,7 @@ export const serviceTypes = [
 
 export type ServiceType = (typeof serviceTypes)[number];
 
-export interface ServicemanWithoutRelations {
+export interface ServicemanRow {
   id: number;
   lastName: string;
   firstName: string;
@@ -28,15 +36,11 @@ export interface ServicemanWithoutRelations {
   rankId: number;
 }
 
-export type ServicemanWithUnit = ServicemanWithoutRelations & {
-  unitId: number;
-};
-
-export const generateServicemenWithoutUnit = (
+export const generateServicemen = (
   count: number,
   rankIds: number[]
-): ServicemanWithoutRelations[] => {
-  const servicemen: ServicemanWithoutRelations[] = [];
+): ServicemanRow[] => {
+  const servicemen: ServicemanRow[] = [];
   const phones = new Set<string>();
   const emails = new Set<string>();
 
@@ -83,16 +87,6 @@ export const generateServicemenWithoutUnit = (
   return servicemen;
 };
 
-export const assignUnitsToServicemen = (
-  servicemen: ServicemanWithoutRelations[],
-  unitIds: number[]
-): ServicemanWithUnit[] => {
-  return servicemen.map((serviceman, i) => ({
-    ...serviceman,
-    unitId: unitIds[i] ?? faker.helpers.arrayElement(unitIds),
-  }));
-};
-
 export type SpecialtyServicemenRow = {
   servicemanId: number;
   specialtyId: number;
@@ -101,7 +95,7 @@ export type SpecialtyServicemenRow = {
 };
 
 export const assignSpecialtiesToServicemen = (
-  servicemen: ServicemanWithUnit[],
+  servicemen: ServicemanRow[],
   specialtyIds: number[]
 ): SpecialtyServicemenRow[] => {
   const specialtyServicemen: SpecialtyServicemenRow[] = [];
@@ -121,4 +115,55 @@ export const assignSpecialtiesToServicemen = (
     }
   }
   return specialtyServicemen;
+};
+export const generateRankAttributeValues = (
+  ranks: RankRow[],
+  rankAttributeRanks: RankAttributeToRankRow[],
+  rankAttributes: RankAttributeRow[],
+  servicemen: ServicemanRow[]
+): RankAttributeValueRow[] => {
+  const allRankAttributesForEachRank: Map<number, RankAttributeRow[]> =
+    new Map();
+
+  for (const rank of ranks) {
+    const availableRankAttributes = rankAttributeRanks
+      .filter((rar) => rar.rank_id === rank.id)
+      .map((rar) =>
+        findOrThrow(rankAttributes, (attr) => attr.id === rar.attribute_id)
+      );
+    allRankAttributesForEachRank.set(rank.id, availableRankAttributes);
+  }
+
+  const rankAttributeValues: RankAttributeValueRow[] = [];
+
+  for (const serviceman of servicemen) {
+    const servicemanRank = findOrThrow(
+      ranks,
+      (rank) => rank.id === serviceman.rankId
+    );
+
+    const chosenRankAttributes = allRankAttributesForEachRank
+      .get(servicemanRank.id)
+      ?.filter((attr) => {
+        return attr.is_required || faker.datatype.boolean();
+      })!;
+
+    for (const attr of chosenRankAttributes) {
+      let result: RankAttributeValueRow = {
+        rank_id: servicemanRank.id,
+        attribute_id: attr.id,
+        serviceman_id: serviceman.id,
+        value_int: null,
+        value_text: null,
+        value_float: null,
+        value_boolean: null,
+        value_date: null,
+      };
+
+      setRandomAttributeValue(attr, result);
+
+      rankAttributeValues.push(result);
+    }
+  }
+  return rankAttributeValues;
 };

@@ -207,10 +207,28 @@ CREATE TABLE
         id BIGINT PRIMARY KEY,
         name VARCHAR(100) NOT NULL UNIQUE,
         parent_unit_id BIGINT,
-        captain_id BIGINT NOT NULL,
         location_id BIGINT NOT NULL,
         unit_level_id BIGINT NOT NULL
     );
+
+CREATE TYPE unit_member_role AS ENUM ('MEMBER', 'COMMANDER');
+
+CREATE TABLE
+    unit_members (
+        unit_id BIGINT NOT NULL,
+        serviceman_id BIGINT NOT NULL,
+        assigned_at DATE NOT NULL,
+        discharged_at DATE,
+        role unit_member_role NOT NULL,
+        PRIMARY KEY (unit_id, serviceman_id)
+    );
+
+ALTER TABLE unit_members ADD CONSTRAINT chk_unit_member_dates CHECK (
+    discharged_at IS NULL
+    OR discharged_at >= assigned_at
+);
+
+ALTER TABLE unit_members ADD CONSTRAINT chk_assigned_before_now CHECK (assigned_at <= CURRENT_DATE);
 
 ALTER TABLE units ADD CONSTRAINT chk_units_name CHECK (units.name <> '');
 

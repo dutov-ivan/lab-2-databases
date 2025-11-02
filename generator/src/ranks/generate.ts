@@ -1,8 +1,4 @@
-import {
-  randomAttributeValue as setRandomAttributeValue,
-  type Attribute,
-  type AttributeEnum,
-} from "../common/AttributeType.ts";
+import { type Attribute, type AttributeEnum } from "../common/AttributeType.ts";
 import type {
   GeneratedRank,
   GeneratedRankAttribute,
@@ -10,8 +6,6 @@ import type {
 } from "./data.ts";
 import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
 import { findOrThrow } from "../utils/findOrThrow.ts";
-import type { ServicemanWithUnit } from "../servicemen/generate.ts";
-import { faker } from "../utils/faker.ts";
 
 type RankCategoryRow = {
   id: number;
@@ -21,7 +15,7 @@ type RankCategoryRow = {
   maxRank: number;
 };
 
-interface RankAttributeRow extends Attribute {
+export interface RankAttributeRow extends Attribute {
   id: number;
   name: string; // Назва атрибута (наприклад, "дата закінчення академії", "дата присвоєння генеральського звання" тощо)
   attributeType: AttributeEnum; // Тип даних атрибута;
@@ -32,12 +26,12 @@ interface RankAttributeRow extends Attribute {
   enum_values: string | null;
 }
 
-type RankAttributeToRankRow = {
+export type RankAttributeToRankRow = {
   rank_id: number; // Ідентифікатор рангу
   attribute_id: number; // Ідентифікатор атрибута
 };
 
-type RankRow = {
+export type RankRow = {
   id: number;
   name: string;
   description: string;
@@ -45,7 +39,7 @@ type RankRow = {
   rankValue: number;
 };
 
-type RankAttributeValueRow = {
+export type RankAttributeValueRow = {
   rank_id: number;
   attribute_id: number;
   serviceman_id: number;
@@ -135,56 +129,4 @@ export const generateRankTables = (
     ranks: rankTables,
     rankAttributeRanks: rankAttributeToRank,
   };
-};
-
-export const generateRankAttributeValues = (
-  ranks: RankRow[],
-  rankAttributeRanks: RankAttributeToRankRow[],
-  rankAttributes: RankAttributeRow[],
-  servicemen: ServicemanWithUnit[]
-): RankAttributeValueRow[] => {
-  const allRankAttributesForEachRank: Map<number, RankAttributeRow[]> =
-    new Map();
-
-  for (const rank of ranks) {
-    const availableRankAttributes = rankAttributeRanks
-      .filter((rar) => rar.rank_id === rank.id)
-      .map((rar) =>
-        findOrThrow(rankAttributes, (attr) => attr.id === rar.attribute_id)
-      );
-    allRankAttributesForEachRank.set(rank.id, availableRankAttributes);
-  }
-
-  const rankAttributeValues: RankAttributeValueRow[] = [];
-
-  for (const serviceman of servicemen) {
-    const servicemanRank = findOrThrow(
-      ranks,
-      (rank) => rank.id === serviceman.rankId
-    );
-
-    const chosenRankAttributes = allRankAttributesForEachRank
-      .get(servicemanRank.id)
-      ?.filter((attr) => {
-        return attr.is_required || faker.datatype.boolean();
-      })!;
-
-    for (const attr of chosenRankAttributes) {
-      let result: RankAttributeValueRow = {
-        rank_id: servicemanRank.id,
-        attribute_id: attr.id,
-        serviceman_id: serviceman.id,
-        value_int: null,
-        value_text: null,
-        value_float: null,
-        value_boolean: null,
-        value_date: null,
-      };
-
-      setRandomAttributeValue(attr, result);
-
-      rankAttributeValues.push(result);
-    }
-  }
-  return rankAttributeValues;
 };

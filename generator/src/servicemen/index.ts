@@ -2,12 +2,19 @@ import type { MilitarySpecialtyTables } from "../military_specialties/generate.t
 import { saveAsCsv } from "../utils/file.ts";
 import {
   assignSpecialtiesToServicemen,
-  type ServicemanWithUnit,
+  generateServicemen,
+  type ServicemanRow,
 } from "./generate.ts";
+
+export const writeServicemen = (rankIds: number[]) => {
+  const servicemen = generateServicemen(1000, rankIds);
+
+  return servicemen;
+};
 
 export const writeServicemenSpecialties = (
   militarySpecialtyTables: MilitarySpecialtyTables,
-  servicemen: ServicemanWithUnit[]
+  servicemen: ServicemanRow[]
 ) => {
   const specialtyServicemenRows = assignSpecialtiesToServicemen(
     servicemen,

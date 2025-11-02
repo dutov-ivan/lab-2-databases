@@ -7,7 +7,7 @@ import {
   type MunitionTables,
 } from "./generate.ts";
 import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
-import type { Unit } from "../units/generate.ts";
+import type { UnitRow } from "../units/generate.ts";
 
 export const writeMunitionTables = (
   unitTable: MeasurementUnitRow[]
@@ -38,7 +38,7 @@ export const writeMunitionTables = (
 };
 
 export const writeMunitionSupplies = (
-  units: Unit[],
+  units: UnitRow[],
   munitionTables: MunitionTables
 ): MunitionSupplyRow[] => {
   const { types: munitionTypes, categories: munitionCategory } = munitionTables;
