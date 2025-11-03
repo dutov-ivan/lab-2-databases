@@ -48,6 +48,20 @@ ALTER TABLE servicemen ADD CONSTRAINT chk_email_format CHECK (
     OR email IS NULL
 );
 
+-- Додаємо нову таблицю для подальшого видалення (вона необов'язкова за завданням)
+CREATE TABLE equipment_assignments (
+    assignment_id SERIAL PRIMARY KEY,
+    serviceman_id BIGINT NOT NULL,
+    equipment_tag VARCHAR(50) NOT NULL,
+    assigned_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    quantity INT NOT NULL
+);
+
+ALTER TABLE equipment_assignments
+ADD CONSTRAINT chk_equip_quantity CHECK (quantity > 0);
+
+CREATE UNIQUE INDEX uq_equip_tag ON equipment_assignments (equipment_tag);
+
 -- Стосується військових спеціальностей
 CREATE TABLE
     military_specialty_categories (
@@ -74,11 +88,8 @@ CREATE TABLE
         serviceman_id BIGINT,
         specialty_id BIGINT,
         attained_at DATE NOT NULL,
-        proficiency_level INT NOT NULL,
         PRIMARY KEY (serviceman_id, specialty_id)
     );
-
-ALTER TABLE servicemen_specialties ADD CONSTRAINT chk_proficiency_level CHECK (proficiency_level BETWEEN 1 AND 5);
 
 -- Стосується звань
 CREATE TABLE
@@ -130,20 +141,13 @@ CREATE TABLE
         id BIGINT PRIMARY KEY,
         attribute_name VARCHAR(100) NOT NULL,
         attribute_type attribute_type NOT NULL,
-        is_enum BOOLEAN NOT NULL,
         is_mandatory BOOLEAN NOT NULL,
         unit_id BIGINT NULL,
         description VARCHAR(255) NULL,
-        enum_values JSONB NULL,
         measurement_unit_id BIGINT NULL
     );
 
 ALTER TABLE rank_attributes ADD CONSTRAINT chk_attribute_name CHECK (rank_attributes.attribute_name <> '');
-
-ALTER TABLE rank_attributes ADD CONSTRAINT chk_enum_values_spec CHECK (
-    NOT is_enum
-    OR enum_values IS NOT NULL
-);
 
 CREATE TABLE
     ranks_rank_attributes (

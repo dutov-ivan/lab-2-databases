@@ -1,3 +1,17 @@
+DO $$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN
+        SELECT tablename
+        FROM pg_tables
+        WHERE schemaname = 'public'
+    LOOP
+        EXECUTE format('TRUNCATE TABLE %I CASCADE;', r.tablename);
+    END LOOP;
+END $$;
+
+
 -- Стосується одиниць вимірювання
 COPY measurement_units (id, name, abbreviation)
 FROM
@@ -113,7 +127,6 @@ COPY units (
     id,
     name,
     parent_unit_id,
-    captain_id,
     location_id,
     unit_level_id
 )
@@ -140,8 +153,6 @@ FROM
     '/import/servicemen.csv'
 WITH
     (FORMAT csv, HEADER true);
-
-ALTER TABLE units ADD CONSTRAINT fk_units_captain FOREIGN KEY (captain_id) REFERENCES servicemen (id);
 
 COPY rank_attribute_values (
     rank_id,

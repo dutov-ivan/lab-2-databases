@@ -1,6 +1,12 @@
 -- Стосується військовослужбовців
 ALTER TABLE servicemen ADD CONSTRAINT fk_servicemen_rank FOREIGN KEY (current_rank_id) REFERENCES ranks (id);
 
+-- Додаємо зовнішній ключ, який потім видалимо
+ALTER TABLE equipment_assignments
+ADD CONSTRAINT fk_equip_serviceman
+    FOREIGN KEY (serviceman_id)
+    REFERENCES servicemen (id);
+
 -- Стосується військових спеціальностей
 ALTER TABLE military_specialties ADD CONSTRAINT fk_military_specialties_category FOREIGN KEY (category_id) REFERENCES military_specialty_categories (id);
 
