@@ -7,7 +7,7 @@ import type {
 import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
 import { findOrThrow } from "../utils/findOrThrow.ts";
 
-type RankCategoryRow = {
+export type RankCategoryRow = {
   id: number;
   name: string;
   description: string;

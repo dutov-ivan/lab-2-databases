@@ -1,5 +1,5 @@
-import type { AttributeEnum } from "../common/AttributeType";
-import type { UNITS } from "../measurement_units/data";
+import type { AttributeEnum } from "../common/AttributeType.ts";
+import type { UNITS } from "../measurement_units/data.ts";
 
 export type MunitionCategory = {
   name: string; // Наприклад, "автомати", "гранатомети", "гранати", "БПЛА" тощо

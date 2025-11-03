@@ -1,7 +1,6 @@
 import { faker } from "../utils/faker.ts";
-import type { UnitLevel } from "./data.ts";
+import type { GeneratedUnitLevel } from "./data.ts";
 import type { LocationRow } from "../locations/generate.ts";
-import type { ServicemanRow } from "../servicemen/generate.ts";
 
 export interface UnitData {
   name: string;
@@ -18,9 +17,27 @@ export type UnitRow = {
   level_id: number;
 };
 
+export type UnitLevelRow = {
+  id: number;
+  name: string;
+  description: string;
+  level: number;
+};
+
+export const generateUnitLevels = (
+  unitLevel: GeneratedUnitLevel[]
+): UnitLevelRow[] => {
+  return unitLevel.map((level, index) => ({
+    id: index + 1,
+    name: level.name,
+    description: level.description,
+    level: level.level,
+  }));
+};
+
 const generateUnitNode = (
   locations: LocationRow[],
-  levels: UnitLevel[],
+  levels: UnitLevelRow[],
   unitNamesSet: Set<string>
 ): UnitData => {
   let name: string;
@@ -63,7 +80,7 @@ const traverseAndAssignParentIds = (start: UnitData): UnitRow[] => {
 
 export const generateUnitsWithoutCaptain = (
   count: number,
-  levels: UnitLevel[],
+  levels: UnitLevelRow[],
   locations: LocationRow[]
 ): UnitRow[] => {
   const unitNamesSet = new Set<string>();

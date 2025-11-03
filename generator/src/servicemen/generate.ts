@@ -21,7 +21,7 @@ export const serviceTypes = [
 
 export type ServiceType = (typeof serviceTypes)[number];
 
-export interface ServicemanRow {
+export interface ServicemanDataRow {
   id: number;
   lastName: string;
   firstName: string;
@@ -33,14 +33,14 @@ export interface ServicemanRow {
   dischargeDate: string | null;
   phoneNumber: string | null;
   email: string | null;
+}
+
+export interface ServicemanRow extends ServicemanDataRow {
   rankId: number;
 }
 
-export const generateServicemen = (
-  count: number,
-  rankIds: number[]
-): ServicemanRow[] => {
-  const servicemen: ServicemanRow[] = [];
+export const generateServicemen = (count: number): ServicemanDataRow[] => {
+  const servicemen: ServicemanDataRow[] = [];
   const phones = new Set<string>();
   const emails = new Set<string>();
 
@@ -80,7 +80,6 @@ export const generateServicemen = (
         : null,
       phoneNumber,
       email,
-      rankId: faker.helpers.arrayElement(rankIds),
     });
   }
 
@@ -95,7 +94,7 @@ export type SpecialtyServicemenRow = {
 };
 
 export const assignSpecialtiesToServicemen = (
-  servicemen: ServicemanRow[],
+  servicemen: ServicemanDataRow[],
   specialtyIds: number[]
 ): SpecialtyServicemenRow[] => {
   const specialtyServicemen: SpecialtyServicemenRow[] = [];

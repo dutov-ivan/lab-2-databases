@@ -1,4 +1,4 @@
-import type { ScrapedData } from "./scrape";
+import type { ScrapedData } from "./scrape.ts";
 
 type MilitarySpecialtyRow = {
   id: number;

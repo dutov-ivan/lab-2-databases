@@ -23,7 +23,6 @@ CREATE TABLE
         phone_number VARCHAR(15) UNIQUE,
         email VARCHAR(100) UNIQUE,
         current_rank_id BIGINT NOT NULL,
-        unit_id BIGINT NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT NOW ()
     );
 

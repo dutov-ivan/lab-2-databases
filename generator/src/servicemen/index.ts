@@ -6,8 +6,8 @@ import {
   type ServicemanRow,
 } from "./generate.ts";
 
-export const writeServicemen = (rankIds: number[]) => {
-  const servicemen = generateServicemen(1000, rankIds);
+export const getServicemenData = () => {
+  const servicemen = generateServicemen(1000);
 
   return servicemen;
 };
@@ -23,5 +23,19 @@ export const writeServicemenSpecialties = (
   saveAsCsv(specialtyServicemenRows, {
     producesFile: true,
     filename: "servicemen_specialties.csv",
+  });
+};
+
+export const writeServicemen = (servicemen: ServicemanRow[]) => {
+  saveAsCsv(servicemen, {
+    quotedColumns: [
+      "firstName",
+      "lastName",
+      "middleName",
+      "phoneNumber",
+      "email",
+    ],
+    producesFile: true,
+    filename: "servicemen.csv",
   });
 };

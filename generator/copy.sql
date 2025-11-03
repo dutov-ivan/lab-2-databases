@@ -134,8 +134,7 @@ COPY servicemen (
     discharge_date,
     phone_number,
     email,
-    current_rank_id,
-    unit_id
+    current_rank_id
 )
 FROM
     '/import/servicemen.csv'
@@ -173,5 +172,17 @@ COPY servicemen_specialties (
 )
 FROM
     '/import/servicemen_specialties.csv'
+WITH
+    (FORMAT csv, HEADER true);
+
+COPY unit_members (
+    assigned_at,
+    discharged_at,
+    role,
+    unit_id,
+    serviceman_id
+)
+FROM
+    '/import/unit_members.csv'
 WITH
     (FORMAT csv, HEADER true);

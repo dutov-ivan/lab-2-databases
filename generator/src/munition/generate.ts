@@ -132,8 +132,8 @@ export const generateMunitionSupplies = (
   munitionCategory: MunitionCategoryRow[],
   mostTypesPerUnit: number
 ): MunitionSupplyRow[] => {
-  const maxLevel = Math.max(...units.map((u) => u.level_id));
-  const leastUnit = units.filter((u) => u.level_id === maxLevel);
+  const highestLevel = Math.min(...units.map((u) => u.level_id));
+  const leastUnit = units.filter((u) => u.level_id === highestLevel);
 
   const munitionSupplies: MunitionSupplyRow[] = [];
   for (const unit of leastUnit) {

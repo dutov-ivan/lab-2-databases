@@ -1,4 +1,4 @@
-import type { MeasurementUnit, UNITS } from "./data";
+import type { MeasurementUnit, UNITS } from "./data.ts";
 
 export type AllowedUnits = (typeof UNITS)[number];
 
