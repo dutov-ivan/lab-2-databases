@@ -5,6 +5,7 @@ import type {
 } from "../servicemen/generate.ts";
 import type { GeneratedUnitLevel } from "../units/data.ts";
 import type { UnitLevelRow, UnitRow } from "../units/generate.ts";
+import { dateYearsAgo } from "../utils/date.ts";
 import { faker } from "../utils/faker.ts";
 import { findOrThrow } from "../utils/findOrThrow.ts";
 
@@ -65,20 +66,59 @@ export const assignRankAndMembersToUnits = (
       ...servicemen[servicemanIndex]!,
       rankId: faker.helpers.arrayElement(suitableRanks).id,
     });
-    servicemanIndex++;
+
     if (servicemanIndex >= servicemen.length) {
       throw new Error("Not enough servicemen to assign to units");
     }
 
-    const assignedAt = faker.date.past({ years: 5 });
+    let prevDischargeDate: Date | null = null;
+    if (
+      servicemanIndex < servicemen.length - 1 &&
+      faker.datatype.boolean(0.1)
+    ) {
+      console.log("GENERATING PREV COMMANDER");
+      const prevAssignedAt = faker.date.between({
+        from: dateYearsAgo(5),
+        to: dateYearsAgo(3),
+      });
+      prevDischargeDate = faker.date.between({
+        from: prevAssignedAt,
+        to: faker.date.between({
+          from: prevAssignedAt,
+          to: dateYearsAgo(2),
+        }),
+      });
+
+      unitMembers.push({
+        assigned_at: prevAssignedAt.toISOString(),
+        discharged_at: prevDischargeDate.toISOString(),
+        role: "COMMANDER",
+        unit_id: unit.id,
+        serviceman_id: servicemenWithRanks[servicemanIndex]!.id,
+      });
+      servicemanIndex++;
+
+      servicemenWithRanks.push({
+        ...servicemen[servicemanIndex]!,
+        rankId: faker.helpers.arrayElement(suitableRanks).id,
+      });
+    }
+
+    const assignedAt = prevDischargeDate
+      ? faker.date
+          .between({ from: prevDischargeDate, to: Date.now() })
+          .toISOString()
+      : faker.date.past({ years: 5 }).toISOString();
 
     unitMembers.push({
-      assigned_at: assignedAt.toISOString(),
+      assigned_at: assignedAt,
       discharged_at: null,
       role: "COMMANDER",
       unit_id: unit.id,
-      serviceman_id: servicemenWithRanks[servicemanIndex - 1]!.id,
+      serviceman_id: servicemenWithRanks[servicemanIndex]!.id,
     });
+
+    servicemanIndex++;
   }
 
   if (servicemanIndex >= servicemen.length) {
