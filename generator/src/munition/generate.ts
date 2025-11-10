@@ -114,6 +114,9 @@ export const generateMunitionTables = (
           value_date: null,
         };
 
+        if (!attr.is_mandatory && faker.datatype.boolean(0.4)) {
+          return;
+        }
         randomAttributeValue(attr, result);
         munitionTypeValues.push(result);
       });
