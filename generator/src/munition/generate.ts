@@ -129,6 +129,11 @@ export const generateMunitionTables = (
   };
 };
 
+export type MunitionSupplyPrimaryKey = {
+  unit_id: number;
+  munition_type_id: number;
+};
+
 export const generateMunitionSupplies = (
   units: UnitRow[],
   munitionTypes: MunitionTypeRow[],
@@ -139,11 +144,26 @@ export const generateMunitionSupplies = (
   const leastUnit = units.filter((u) => u.level_id === highestLevel);
 
   const munitionSupplies: MunitionSupplyRow[] = [];
+  // store composite keys as strings "<unit_id>:<munition_type_id>" so Set dedup works
+  const prevGenerations: Set<string> = new Set();
+
+  // Required by task in 3rd lab
+  populateBMPTypes(
+    munitionCategory,
+    munitionTypes,
+    leastUnit,
+    munitionSupplies,
+    prevGenerations
+  );
+
   for (const unit of leastUnit) {
     const typesCount = faker.number.int({ min: 1, max: mostTypesPerUnit });
-    const selectedTypes = faker.helpers.arrayElements(
+    const selectedTypes = generateTypesUntilAvailable(
       munitionTypes,
-      typesCount
+      typesCount,
+      (type_id: number) => {
+        return prevGenerations.has(`${unit.id}:${type_id}`);
+      }
     );
 
     for (const type of selectedTypes) {
@@ -167,7 +187,62 @@ export const generateMunitionSupplies = (
         munition_type_id: type.id,
         quantity,
       });
+
+      // add composite key so we don't generate the same (unit,type) again
+      prevGenerations.add(`${unit.id}:${type.id}`);
     }
   }
   return munitionSupplies;
 };
+function generateTypesUntilAvailable(
+  munitionTypes: MunitionTypeRow[],
+  typesCount: number,
+  alreadyGenerated: (type_id: number) => boolean
+): MunitionTypeRow[] {
+  // filter out types that are already generated for the specific unit
+  const available = munitionTypes.filter((t) => !alreadyGenerated(t.id));
+
+  if (available.length === 0) return [];
+
+  const pickCount = Math.min(typesCount, available.length);
+  return faker.helpers.arrayElements(available, pickCount);
+}
+
+function populateBMPTypes(
+  munitionCategory: MunitionCategoryRow[],
+  munitionTypes: MunitionTypeRow[],
+  leastUnit: UnitRow[],
+  munitionSupplies: MunitionSupplyRow[],
+  prevGenerations: Set<string>
+) {
+  const bmpRegex = /.*БМП.*/;
+  const bmpCount = 10;
+  const bmpCategory = findOrThrow(munitionCategory, (cat) =>
+    bmpRegex.test(cat.name)
+  );
+  const bmpTypes = munitionTypes.filter(
+    (mt) => mt.munition_category_id === bmpCategory.id
+  );
+  if (bmpTypes.length === 0 || leastUnit.length === 0) return;
+
+  const pairs: { unit: UnitRow; type: MunitionTypeRow }[] = [];
+  for (const unit of leastUnit) {
+    for (const bt of bmpTypes) {
+      const key = `${unit.id}:${bt.id}`;
+      if (!prevGenerations.has(key)) {
+        pairs.push({ unit, type: bt });
+      }
+    }
+  }
+
+  const shuffled = faker.helpers.shuffle(pairs);
+  const take = Math.min(bmpCount, shuffled.length);
+  for (const { unit, type } of shuffled.slice(0, take)) {
+    munitionSupplies.push({
+      unit_id: unit.id,
+      munition_type_id: type.id,
+      quantity: faker.number.int({ min: 1, max: 20 }),
+    });
+    prevGenerations.add(`${unit.id}:${type.id}`);
+  }
+}
