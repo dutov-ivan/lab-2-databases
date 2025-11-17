@@ -1,3 +1,43 @@
+CREATE OR REPLACE FUNCTION enforce_unit_hierarchy()
+RETURNS trigger AS $$
+DECLARE
+    parent_level int;
+    level int;
+BEGIN
+    IF NEW.parent_unit_id IS NULL THEN
+        RETURN NEW;
+    END IF;
+
+    SELECT ul.level INTO level
+    FROM unit_levels ul
+    WHERE id = NEW.unit_level_id;
+
+    SELECT ul.level INTO parent_level
+    FROM units
+    JOIN unit_levels ul ON units.unit_level_id = ul.id
+    WHERE units.id = NEW.parent_unit_id;
+
+
+    IF parent_level IS NULL THEN
+        RAISE EXCEPTION 'Parent unit % does not exist', NEW.parent_unit_id;
+    END IF;
+
+    IF parent_level <> level - 1 THEN
+        RAISE EXCEPTION
+            'Invalid hierarchy: parent level %, new unit level % (expected parent level %)',
+            parent_level, level, level - 1;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_unit_level ON units;
+CREATE TRIGGER check_unit_level
+    BEFORE INSERT ON units
+    FOR EACH ROW
+    EXECUTE FUNCTION enforce_unit_hierarchy();
+
 DO $$
 DECLARE
     r RECORD;
@@ -120,20 +160,24 @@ FROM
 WITH
     (FORMAT csv, HEADER true);
 
-ALTER TABLE units
-DROP CONSTRAINT IF EXISTS fk_units_captain;
+CREATE TABLE IF NOT EXISTS units_structure_staging(
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    parent_unit_id INT,
+    location_id INT,
+    unit_level_id INT
+);
 
-COPY units (
-    id,
-    name,
-    parent_unit_id,
-    location_id,
-    unit_level_id
-)
+COPY units_structure_staging
 FROM
     '/import/units.csv'
-WITH
-    (FORMAT csv, HEADER true);
+    CSV HEADER;
+
+INSERT INTO units(id, name, parent_unit_id, location_id, unit_level_id)
+SELECT uss.id, uss.name, uss.parent_unit_id, uss.location_id, uss.unit_level_id
+FROM units_structure_staging uss;
+
+DROP TABLE units_structure_staging;
 
 COPY servicemen (
     id,

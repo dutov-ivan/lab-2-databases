@@ -38,7 +38,8 @@ export const generateUnitLevels = (
 const generateUnitNode = (
   locations: LocationRow[],
   levels: UnitLevelRow[],
-  unitNamesSet: Set<string>
+  unitNamesSet: Set<string>,
+  levelIndex: number
 ): UnitData => {
   let name: string;
   do {
@@ -48,7 +49,7 @@ const generateUnitNode = (
 
   return {
     name,
-    level_id: faker.helpers.arrayElement(levels).id,
+    level_id: levels[levelIndex]!.id,
     location_id: faker.helpers.arrayElement(locations).id,
     children: [],
   };
@@ -86,7 +87,12 @@ export const generateUnitsWithoutCaptain = (
   const unitNamesSet = new Set<string>();
 
   let remainingNodes = count;
-  const rootNode: UnitData = generateUnitNode(locations, levels, unitNamesSet);
+  const rootNode: UnitData = generateUnitNode(
+    locations,
+    levels,
+    unitNamesSet,
+    0
+  );
 
   remainingNodes--;
 
@@ -96,11 +102,16 @@ export const generateUnitsWithoutCaptain = (
   }
   levelsWithNodes[0]!.push(rootNode);
   while (remainingNodes > 0) {
-    const currentLevel =
-      levelsWithNodes[
-        faker.number.int({ min: 1, max: levelsWithNodes.length - 1 }) // Exclude root level
-      ]!;
-    currentLevel.push(generateUnitNode(locations, levels, unitNamesSet));
+    // Pick a level index (exclude root level index 0) where we'll add a node.
+    const levelIndex = faker.number.int({
+      min: 1,
+      max: levelsWithNodes.length - 1,
+    }); // Exclude root level
+
+    const currentLevel = levelsWithNodes[levelIndex]!;
+    currentLevel.push(
+      generateUnitNode(locations, levels, unitNamesSet, levelIndex)
+    );
     remainingNodes--;
   }
 
