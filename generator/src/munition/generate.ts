@@ -7,7 +7,7 @@ import {
 } from "../common/AttributeType.ts";
 import type { MeasurementUnitRow } from "../measurement_units/generate.ts";
 import { faker } from "../utils/faker.ts";
-import type { UnitRow } from "../units/generate.ts";
+import type { UnitRow, UnitLevelRow } from "../units/generate.ts";
 import { findOrThrow } from "../utils/findOrThrow.ts";
 
 type MunitionCategoryRow = {
@@ -138,10 +138,18 @@ export const generateMunitionSupplies = (
   units: UnitRow[],
   munitionTypes: MunitionTypeRow[],
   munitionCategory: MunitionCategoryRow[],
-  mostTypesPerUnit: number
+  mostTypesPerUnit: number,
+  unitLevels: UnitLevelRow[]
 ): MunitionSupplyRow[] => {
-  const highestLevel = Math.min(...units.map((u) => u.level_id));
-  const leastUnit = units.filter((u) => u.level_id === highestLevel);
+  // Find the unit level(s) with the highest `level` property (these are the
+  // lowest units in the hierarchy). Assign munitions only to units whose
+  // `level_id` corresponds to those unit level ids.
+  const maxLevelValue = Math.max(...unitLevels.map((l) => l.level));
+  const lowestLevelIds = unitLevels
+    .filter((l) => l.level === maxLevelValue)
+    .map((l) => l.id);
+
+  const leastUnit = units.filter((u) => lowestLevelIds.includes(u.level_id));
 
   const munitionSupplies: MunitionSupplyRow[] = [];
   // store composite keys as strings "<unit_id>:<munition_type_id>" so Set dedup works

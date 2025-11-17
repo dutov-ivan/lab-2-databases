@@ -47,6 +47,6 @@ writeUnitMembers(unitMembers);
 
 writeRankAttributeValues(rankTables, servicemenWithRanks);
 
-writeMunitionSupplies(units, munitionTables);
+writeMunitionSupplies(units, munitionTables, unitLevels);
 
 writeServicemenSpecialties(militarySpecialtyTables, servicemenWithRanks);
